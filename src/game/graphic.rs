@@ -24,6 +24,16 @@ impl Game {
             result.push(Graphic::new_rect(box_x + BOARD_SIZE + 20.0, (i * 72) as f32 + box_y, 60.0, 18.0, 0.0, Color::wall()));
         }
 
+        if self.player1_turn {
+            result.push(Graphic::new_triangle(box_x, box_y - 40.0, box_x + 90.0, box_y - 70.0, box_x + 90.0, box_y - 10.0, 0.0, Color::player1_normal()));
+            result.push(Graphic::new_triangle(box_x + BOARD_SIZE - 20.0, box_y - 40.0, box_x + BOARD_SIZE - 60.0, box_y - 50.0, box_x + BOARD_SIZE - 60.0, box_y - 30.0, 0.0, Color::player2_normal()));
+        }
+
+        else {
+            result.push(Graphic::new_triangle(box_x + 20.0, box_y - 40.0, box_x + 60.0, box_y - 50.0, box_x + 60.0, box_y - 30.0, 0.0, Color::player1_normal()));
+            result.push(Graphic::new_triangle(box_x + BOARD_SIZE, box_y - 40.0, box_x + BOARD_SIZE - 90.0, box_y - 70.0, box_x + BOARD_SIZE - 90.0, box_y - 10.0, 0.0, Color::player2_normal()));
+        }
+
         let mut buttons = vec![];
 
         for button in self.buttons.iter_mut() {
