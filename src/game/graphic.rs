@@ -1,7 +1,7 @@
 use super::{Game, BOARD_SIZE};
 use crate::graphic::Graphic;
 use crate::color::Color;
-use crate::widget::{textbox::TextBox, align::Alignment};
+use crate::widget::textbox::TextBox;
 
 impl Game {
 
@@ -14,7 +14,7 @@ impl Game {
             210.0,
             60.0,
             51.0
-        ).set_color(Color::ui()).set_horizontal_align(Alignment::Center).set_vertical_align(Alignment::Center).render();
+        ).set_color(Color::ui()).align_center().render();
 
         for i in 0..self.player1.walls {
             result.push(Graphic::new_rect(box_x - 80.0, (i * 72) as f32 + box_y, 60.0, 18.0, 0.0, Color::wall()));

@@ -7,7 +7,6 @@ use crate::graphic::Graphic;
 use crate::global::GLOBAL_ENV;
 use crate::widget::{
     textbox::TextBox,
-    align::Alignment,
     button::Button
 };
 use crate::sound::SoundAction;
@@ -30,7 +29,8 @@ pub struct Game {
     pub player1_turn: bool,
     last_turn_data: GameSaveData,
     last_state: GameState,  // state to transit from `ScreenTooSmall`
-    buttons: Vec<Button>
+    buttons: Vec<Button>,
+    frame_count: usize
 }
 
 #[derive(Copy, Clone, PartialEq)]
@@ -63,7 +63,8 @@ impl Game {
             last_state: GameState::Playing,
             buttons: vec![
                 restart_button, undo_button, quit_button
-            ]
+            ],
+            frame_count: 0
         }
     }
 
@@ -221,6 +222,8 @@ impl Context for Game {
         let graphics;
         let (screen_w, screen_h) = unsafe {GLOBAL_ENV.screen_size};
 
+        self.frame_count += 1;
+
         if inputs.is_screen_size_changed {
             self.locate_buttons();
 
@@ -241,8 +244,7 @@ impl Context for Game {
                     "The game screen is too small to play this game. Please resize the window and try again.",
                     20.0, 20.0, screen_w - 40.0, screen_h - 40.0, 28.0
                 ).set_color(Color::new(192, 64, 64, 255))
-                .set_horizontal_align(Alignment::Center)
-                .set_vertical_align(Alignment::Center)
+                .align_center()
                 .to_owned();
                 graphics = textbox.render();
 
@@ -273,11 +275,24 @@ impl Context for Game {
 
                 let (box_x, box_y) = ((screen_w - BOARD_SIZE) / 2.0, (screen_h - BOARD_SIZE) / 1.2);
 
+                let win_message_color = Color::new(
+                    (((self.frame_count as f32 / 6.0).cos() + 2.0) * 48.0 + 64.0).floor() as u8,
+                    192,
+                    192,
+                    (((self.frame_count as f32 / 8.0).cos() + 2.0) * 48.0 + 64.0).floor() as u8,
+                );
+                let win_message = TextBox::new(
+                    &format!("Player {} made it!", if self.did_player1_win() { 1 } else { 2 }),
+                    0.0, 0.0, screen_w, screen_h, 48.0
+                ).set_color(win_message_color)
+                .align_center().render();
+
                 graphics = vec![
                     self.draw_board(box_x, box_y),
                     self.draw_ui(box_x, box_y),
                     self.player1.show_trace(box_x, box_y),
                     self.player2.show_trace(box_x, box_y),
+                    win_message,
                     self.curr_popup.render()
                 ].concat();
 

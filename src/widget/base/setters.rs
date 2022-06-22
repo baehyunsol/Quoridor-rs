@@ -137,4 +137,11 @@ impl Base {
         self
     }
 
+    pub fn align_center(&mut self) -> &mut Self {
+        self.horizontal_align = Alignment::Center;
+        self.vertical_align = Alignment::Center;
+        self.is_rendered = false;
+        self
+    }
+
 }
