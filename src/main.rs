@@ -23,13 +23,14 @@ use global::{EnvMessage, GLOBAL_ENV};
 use std::{time, thread};
 use graphic::Graphic;
 
+
 // configure the game window here
 fn conf() -> Conf {
     Conf {
-        window_height: 720,
-        window_width: 720,
+        window_height: 721,
+        window_width: 961,
         window_resizable: true,
-        window_title: "Quoridor".to_string(),
+        window_title: "Test".to_string(),
         fullscreen: false,
         ..Default::default()
     }
@@ -207,7 +208,7 @@ async fn main() {
 
                 }
                 Graphic::Circle {x, y, r, thickness, color} => {
-                    let sides = if r < 60.0 { 15 } else if r < 180.0 { 24 } else { 30 };
+                    let sides = if r < 60.0 { 15 } else if r < 180.0 { 18 } else { 24 };
 
                     if thickness > 0.0 {
                         draw_poly_lines(
@@ -229,13 +230,13 @@ async fn main() {
 
                     if thickness > 0.0 {
                         draw_triangle_lines(
-                            macroquad::math::Vec2::new(x1, y1), macroquad::math::Vec2::new(x2, y2), macroquad::math::Vec2::new(x3, y3), thickness, Color::from_rgba(color.r, color.g, color.b, color.a)
+                            Vec2::new(x1, y1), Vec2::new(x2, y2), Vec2::new(x3, y3), thickness, Color::from_rgba(color.r, color.g, color.b, color.a)
                         );
                     }
 
                     else {
                         draw_triangle(
-                            macroquad::math::Vec2::new(x1, y1), macroquad::math::Vec2::new(x2, y2), macroquad::math::Vec2::new(x3, y3), Color::from_rgba(color.r, color.g, color.b, color.a)
+                            Vec2::new(x1, y1), Vec2::new(x2, y2), Vec2::new(x3, y3), Color::from_rgba(color.r, color.g, color.b, color.a)
                         );
                     }
 
@@ -269,7 +270,83 @@ async fn main() {
                         textures[image_index], x, y, Color::from_rgba(color.r, color.g, color.b, color.a),
                     );
                 }
+                Graphic::RoundRect {x, y, w, h, radius, thickness, color} => {
 
+                    if thickness > 0.0 {
+                        draw_line(x + 0.293 * radius, y + 0.293 * radius, x + 0.618 * radius, y + 0.077 * radius, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_line(x + 0.618 * radius, y + 0.077 * radius, x + radius, y, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_line(x + radius, y, x + w - radius, y, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_line(x + w - radius, y, x + w - 0.618 * radius, y + 0.077 * radius, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_line(x + w - 0.618 * radius, y + 0.077 * radius, x + w - 0.293 * radius, y + 0.293 * radius, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_line(x + 0.293 * radius, y + h - 0.293 * radius, x + 0.618 * radius, y + h - 0.077 * radius, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_line(x + 0.618 * radius, y + h - 0.077 * radius, x + radius, y + h, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_line(x + radius, y + h, x + w - radius, y + h, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_line(x + w - radius, y + h, x + w - 0.618 * radius, y + h - 0.077 * radius, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_line(x + w - 0.618 * radius, y + h - 0.077 * radius, x + w - 0.293 * radius, y + h - 0.293 * radius, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_line(x + 0.293 * radius, y + 0.293 * radius, x + 0.077 * radius, y + 0.618 * radius, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_line(x + 0.077 * radius, y + 0.618 * radius, x, y + radius, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_line(x, y + radius, x, y + h - radius, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_line(x, y + h - radius, x + 0.077 * radius, y + h - 0.618 * radius, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_line(x + 0.077 * radius, y + h - 0.618 * radius, x + 0.293 * radius, y + h - 0.293 * radius, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_line(x + w - 0.293 * radius, y + 0.293 * radius, x + w - 0.077 * radius, y + 0.618 * radius, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_line(x + w - 0.077 * radius, y + 0.618 * radius, x + w, y + radius, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_line(x + w, y + radius, x + w, y + h - radius, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_line(x + w, y + h - radius, x + w - 0.077 * radius, y + h - 0.618 * radius, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_line(x + w - 0.077 * radius, y + h - 0.618 * radius, x + w - 0.293 * radius, y + h - 0.293 * radius, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
+                    }
+
+                    else {
+                        draw_rectangle(x + radius, y, w - radius * 2.0, h, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_rectangle(x, y + radius, radius, h - radius * 2.0, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_rectangle(x + w - radius, y + radius, radius, h - radius * 2.0, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_triangle(Vec2::new(x + radius, y + radius), Vec2::new(x, y + radius), Vec2::new(x + 0.077 * radius, y + 0.618 * radius), Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_triangle(Vec2::new(x + radius, y + radius), Vec2::new(x + 0.077 * radius, y + 0.618 * radius), Vec2::new(x + 0.293 * radius, y + 0.293 * radius), Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_triangle(Vec2::new(x + radius, y + radius), Vec2::new(x + 0.293 * radius, y + 0.293 * radius), Vec2::new(x + 0.618 * radius, y + 0.077 * radius), Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_triangle(Vec2::new(x + radius, y + radius), Vec2::new(x + 0.618 * radius, y + 0.077 * radius), Vec2::new(x + radius, y), Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_triangle(Vec2::new(x + w - radius, y + radius), Vec2::new(x + w, y + radius), Vec2::new(x + w - 0.077 * radius, y + 0.618 * radius), Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_triangle(Vec2::new(x + w - radius, y + radius), Vec2::new(x + w - 0.077 * radius, y + 0.618 * radius), Vec2::new(x + w - 0.293 * radius, y + 0.293 * radius), Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_triangle(Vec2::new(x + w - radius, y + radius), Vec2::new(x + w - 0.293 * radius, y + 0.293 * radius), Vec2::new(x + w - 0.618 * radius, y + 0.077 * radius), Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_triangle(Vec2::new(x + w - radius, y + radius), Vec2::new(x + w - 0.618 * radius, y + 0.077 * radius), Vec2::new(x + w - radius, y), Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_triangle(Vec2::new(x + radius, y + h - radius), Vec2::new(x, y + h - radius), Vec2::new(x + 0.077 * radius, y + h - 0.618 * radius), Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_triangle(Vec2::new(x + radius, y + h - radius), Vec2::new(x + 0.077 * radius, y + h - 0.618 * radius), Vec2::new(x + 0.293 * radius, y + h - 0.293 * radius), Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_triangle(Vec2::new(x + radius, y + h - radius), Vec2::new(x + 0.293 * radius, y + h - 0.293 * radius), Vec2::new(x + 0.618 * radius, y + h - 0.077 * radius), Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_triangle(Vec2::new(x + radius, y + h - radius), Vec2::new(x + 0.618 * radius, y + h - 0.077 * radius), Vec2::new(x + radius, y + h), Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_triangle(Vec2::new(x + w - radius, y + h - radius), Vec2::new(x + w, y + h - radius), Vec2::new(x + w - 0.077 * radius, y + h - 0.618 * radius), Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_triangle(Vec2::new(x + w - radius, y + h - radius), Vec2::new(x + w - 0.077 * radius, y + h - 0.618 * radius), Vec2::new(x + w - 0.293 * radius, y + h - 0.293 * radius), Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_triangle(Vec2::new(x + w - radius, y + h - radius), Vec2::new(x + w - 0.293 * radius, y + h - 0.293 * radius), Vec2::new(x + w - 0.618 * radius, y + h - 0.077 * radius), Color::from_rgba(color.r, color.g, color.b, color.a));
+                        draw_triangle(Vec2::new(x + w - radius, y + h - radius), Vec2::new(x + w - 0.618 * radius, y + h - 0.077 * radius), Vec2::new(x + w - radius, y + h), Color::from_rgba(color.r, color.g, color.b, color.a));
+                    }
+
+                }
+                Graphic::Polygon {center_x, center_y, points, thickness, color} => {
+
+                    if thickness > 0.0 {
+
+                        for i in 0..points.len() - 1 {
+                            let (x1, y1) = points[i];
+                            let (x2, y2) = points[i + 1];
+                            draw_line(x1, y1, x2, y2, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
+                        }
+
+                        let (x1, y1) = points[0];
+                        let (x2, y2) = points[points.len() - 1];
+                        draw_line(x1, y1, x2, y2, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
+                    }
+
+                    else {
+
+                        for i in 0..points.len() - 1 {
+                            let (x1, y1) = points[i];
+                            let (x2, y2) = points[i + 1];
+                            draw_triangle(Vec2::new(center_x, center_y), Vec2::new(x1, y1), Vec2::new(x2, y2), Color::from_rgba(color.r, color.g, color.b, color.a));
+                        }
+
+                        let (x1, y1) = points[0];
+                        let (x2, y2) = points[points.len() - 1];
+                        draw_triangle(Vec2::new(center_x, center_y), Vec2::new(x1, y1), Vec2::new(x2, y2), Color::from_rgba(color.r, color.g, color.b, color.a));
+                    }
+
+                }
             }
         }
 

@@ -43,6 +43,20 @@ impl Profiler {
             Graphic::Image { .. } => {
                 self.image_count += 1;
             },
+            Graphic::RoundRect { thickness, .. } => {
+
+                if thickness > &0.0 {
+                    self.graphic_count += 20;
+                }
+
+                else {
+                    self.graphic_count += 19;
+                }
+
+            },
+            Graphic::Polygon { points, .. } => {
+                self.graphic_count += points.len() + 1;
+            },
             _ => {
                 self.graphic_count += 1;
             }

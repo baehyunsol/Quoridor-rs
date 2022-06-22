@@ -305,17 +305,17 @@ impl Context for Game {
                 match mouse_index {
                     Index::Box(x, y) => {
                         board_graphics.push(
-                            Graphic::new_rect(box_x + (x * 72) as f32 + 18.0, box_y + (y * 72) as f32 + 18.0, 54.0, 54.0, 0.0, Color::selection_mask())
+                            Graphic::new_round_rect(box_x + (x * 72) as f32 + 21.0, box_y + (y * 72) as f32 + 21.0, 48.0, 48.0, 12.0, 0.0, Color::selection_mask())
                         );
                     }
                     Index::Vertical(x, y) if x < 9 && y < 8 && x > 0 => {
                         board_graphics.push(
-                            Graphic::new_rect(box_x + (x * 72) as f32, box_y + (y * 72) as f32 + 18.0, 18.0, 126.0, 0.0, Color::selection_mask())
+                            Graphic::new_round_rect(box_x + (x * 72) as f32 + 3.0, box_y + (y * 72) as f32 + 18.0, 12.0, 126.0, 6.0, 0.0, Color::selection_mask())
                         );
                     }
                     Index::Horizontal(x, y) if y < 9 && x < 8 && y > 0 => {
                         board_graphics.push(
-                            Graphic::new_rect(box_x + (x * 72) as f32 + 18.0, box_y + (y * 72) as f32, 126.0, 18.0, 0.0, Color::selection_mask())
+                            Graphic::new_round_rect(box_x + (x * 72) as f32 + 18.0, box_y + (y * 72) as f32 + 3.0, 126.0, 12.0, 6.0, 0.0, Color::selection_mask())
                         );
                     }
                     _ => {}

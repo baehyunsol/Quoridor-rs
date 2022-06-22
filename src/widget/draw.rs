@@ -15,29 +15,7 @@ pub fn draw_background(background: &Option<Color>, radius: f32, x: f32, y: f32, 
             }
 
             else {
-                graphics.push(Graphic::new_rect(x + radius, y, w - radius * 2.0, h, 0.0, color.clone()));
-                graphics.push(Graphic::new_rect(x, y + radius, radius, h - radius * 2.0, 0.0, color.clone()));
-                graphics.push(Graphic::new_rect(x + w - radius, y + radius, radius, h - radius * 2.0, 0.0, color.clone()));
-
-                graphics.push(Graphic::new_triangle(x + radius, y + radius, x, y + radius, x + 0.077 * radius, y + 0.618 * radius, 0.0, color.clone()));
-                graphics.push(Graphic::new_triangle(x + radius, y + radius, x + 0.077 * radius, y + 0.618 * radius, x + 0.293 * radius, y + 0.293 * radius, 0.0, color.clone()));
-                graphics.push(Graphic::new_triangle(x + radius, y + radius, x + 0.293 * radius, y + 0.293 * radius, x + 0.618 * radius, y + 0.077 * radius, 0.0, color.clone()));
-                graphics.push(Graphic::new_triangle(x + radius, y + radius, x + 0.618 * radius, y + 0.077 * radius, x + radius, y, 0.0, color.clone()));
-
-                graphics.push(Graphic::new_triangle(x + w - radius, y + radius, x + w, y + radius, x + w - 0.077 * radius, y + 0.618 * radius, 0.0, color.clone()));
-                graphics.push(Graphic::new_triangle(x + w - radius, y + radius, x + w - 0.077 * radius, y + 0.618 * radius, x + w - 0.293 * radius, y + 0.293 * radius, 0.0, color.clone()));
-                graphics.push(Graphic::new_triangle(x + w - radius, y + radius, x + w - 0.293 * radius, y + 0.293 * radius, x + w - 0.618 * radius, y + 0.077 * radius, 0.0, color.clone()));
-                graphics.push(Graphic::new_triangle(x + w - radius, y + radius, x + w - 0.618 * radius, y + 0.077 * radius, x + w - radius, y, 0.0, color.clone()));
-
-                graphics.push(Graphic::new_triangle(x + radius, y + h - radius, x, y + h - radius, x + 0.077 * radius, y + h - 0.618 * radius, 0.0, color.clone()));
-                graphics.push(Graphic::new_triangle(x + radius, y + h - radius, x + 0.077 * radius, y + h - 0.618 * radius, x + 0.293 * radius, y + h - 0.293 * radius, 0.0, color.clone()));
-                graphics.push(Graphic::new_triangle(x + radius, y + h - radius, x + 0.293 * radius, y + h - 0.293 * radius, x + 0.618 * radius, y + h - 0.077 * radius, 0.0, color.clone()));
-                graphics.push(Graphic::new_triangle(x + radius, y + h - radius, x + 0.618 * radius, y + h - 0.077 * radius, x + radius, y + h, 0.0, color.clone()));
-
-                graphics.push(Graphic::new_triangle(x + w - radius, y + h - radius, x + w, y + h - radius, x + w - 0.077 * radius, y + h - 0.618 * radius, 0.0, color.clone()));
-                graphics.push(Graphic::new_triangle(x + w - radius, y + h - radius, x + w - 0.077 * radius, y + h - 0.618 * radius, x + w - 0.293 * radius, y + h - 0.293 * radius, 0.0, color.clone()));
-                graphics.push(Graphic::new_triangle(x + w - radius, y + h - radius, x + w - 0.293 * radius, y + h - 0.293 * radius, x + w - 0.618 * radius, y + h - 0.077 * radius, 0.0, color.clone()));
-                graphics.push(Graphic::new_triangle(x + w - radius, y + h - radius, x + w - 0.618 * radius, y + h - 0.077 * radius, x + w - radius, y + h, 0.0, color.clone()));
+                graphics.push(Graphic::new_round_rect(x, y, w, h, radius, 0.0, color.clone()));
             }
 
         }

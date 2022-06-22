@@ -46,13 +46,13 @@ impl Game {
     pub fn draw_board(&self, box_x: f32, box_y: f32) -> Vec<Graphic> {
         let mut board_graphics = Vec::with_capacity(100);
 
-        board_graphics.push(Graphic::new_rect(box_x, box_y, BOARD_SIZE, BOARD_SIZE, 0.0, Color::board_normal()));
+        board_graphics.push(Graphic::new_round_rect(box_x, box_y, BOARD_SIZE, BOARD_SIZE, 32.0, 0.0, Color::board_normal()));
 
         for x in 0..9 {
 
             for y in 0..9 {
                 board_graphics.push(
-                    Graphic::new_rect(box_x + (x * 72) as f32 + 18.0, box_y + (y * 72) as f32 + 18.0, 54.0, 54.0, 0.0, Color::box_normal())
+                    Graphic::new_round_rect(box_x + (x * 72) as f32 + 18.0, box_y + (y * 72) as f32 + 18.0, 54.0, 54.0, 8.0, 0.0, Color::box_normal())
                 );
             }
 

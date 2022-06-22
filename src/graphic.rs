@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 
 use crate::color::Color;
+use crate::global::GLOBAL_ENV;
 
 #[derive(Clone)]
 pub enum Graphic {
@@ -21,6 +22,12 @@ pub enum Graphic {
     },
     Image {
         image_index: usize, x: f32, y: f32, color: Color
+    },
+    RoundRect {
+        x: f32, y: f32, w: f32, h: f32, radius: f32, thickness: f32, color: Color
+    },
+    Polygon {
+        center_x: f32, center_y: f32, points: Vec<(f32, f32)>, thickness: f32, color: Color
     }
 }
 
@@ -43,6 +50,23 @@ impl Graphic {
     }
     pub fn new_image(x: f32, y: f32, image_index: usize, color: Color) -> Graphic {
         Graphic::Image {x, y, image_index, color}
+    }
+    pub fn new_round_rect(x: f32, y: f32, w: f32, h: f32, radius: f32, thickness: f32, color: Color) -> Graphic {
+        let radius = radius.min(w / 2.0).min(h / 2.0);
+
+        Graphic::RoundRect {x, y, w, h, radius, thickness, color}
+    }
+    pub fn new_polygon(points: Vec<(f32, f32)>, thickness: f32, color: Color) -> Graphic {
+
+        if points.len() < 3 {
+            unsafe { GLOBAL_ENV.raise_error("A polygon with less than three vertexes? No...".to_string()); }
+            return Graphic::new_rect(0.0, 0.0, 0.0, 0.0, 0.0, color);  // dummy data
+        }
+
+        let center_x = (points[0].0 + points[1].0 + points[2].0) / 3.0;
+        let center_y = (points[0].1 + points[1].1 + points[2].1) / 3.0;
+
+        Graphic::Polygon {center_x, center_y, points, thickness, color}
     }
     pub fn move_rel(&self, dx: f32, dy: f32) -> Self {
         match self {
@@ -82,6 +106,17 @@ impl Graphic {
                 y2: y2 + dy,
                 x3: x3 + dx,
                 y3: y3 + dy,
+                thickness: *thickness, color: color.clone()
+            },
+            Graphic::RoundRect {x, y, w, h, radius, thickness, color} => Graphic::RoundRect {
+                x: x + dx,
+                y: y + dy,
+                w: *w, h: *h, radius: *radius, thickness: *thickness, color: color.clone()
+            },
+            Graphic::Polygon {center_x, center_y, points, thickness, color} => Graphic::Polygon {
+                center_x: center_x + dx,
+                center_y: center_y + dy,
+                points: points.iter().map(|(x, y)| (x + dx, y + dy)).collect(),
                 thickness: *thickness, color: color.clone()
             }
         }

@@ -2,6 +2,9 @@
 
 use macroquad::audio::{Sound, PlaySoundParams, play_sound, play_sound_once, stop_sound};
 
+#[cfg(feature = "profile")]
+use crate::global::GLOBAL_ENV;
+
 #[derive(Copy, Clone)]
 pub enum SoundAction {
     PlayOnce(usize),  // if it's already being played, the previous one stops
@@ -54,10 +57,23 @@ impl SoundManager {
 
             match action {
                 SoundAction::PlayOnce(sound) => {
+
+                    #[cfg(feature = "profile")]
+                    if *sound >= self.sounds.len() {
+                        unsafe { GLOBAL_ENV.raise_error("Uninitialized sound used!".to_string()); }
+                        break;
+                    }
+
                     play_sound_once(self.sounds[*sound]);
                     self.is_looping[*sound] = false;
                 }
                 SoundAction::PlayLoop(sound) => {
+
+                    #[cfg(feature = "profile")]
+                    if *sound >= self.sounds.len() {
+                        unsafe { GLOBAL_ENV.raise_error("Uninitialized sound used!".to_string()); }
+                        break;
+                    }
 
                     if !self.is_looping[*sound] {
                         play_sound(self.sounds[*sound], PlaySoundParams {looped: true, ..PlaySoundParams::default()});
@@ -66,6 +82,13 @@ impl SoundManager {
 
                 }
                 SoundAction::Stop(sound) => {
+
+                    #[cfg(feature = "profile")]
+                    if *sound >= self.sounds.len() {
+                        unsafe { GLOBAL_ENV.raise_error("Uninitialized sound used!".to_string()); }
+                        break;
+                    }
+
 
                     if self.is_looping[*sound] {
                         stop_sound(self.sounds[*sound]);
