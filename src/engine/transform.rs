@@ -76,13 +76,14 @@ impl Graphic {
                 thickness: thickness * zoom_x,
                 color: color.clone()
             },
-            Graphic::Circle {x, y, r, thickness, color} => Graphic::Circle {
-                x: scale_scalar(ref_x, *x, zoom_x),
-                y: scale_scalar(ref_y, *y, zoom_y),
-                r: r * zoom_x,  // oh no,...
-                thickness: thickness * zoom_x,
-                color: color.clone()
-            },
+            Graphic::Circle {x, y, r, thickness, color} => Graphic::new_ellipse(
+                scale_scalar(ref_x, *x, zoom_x),
+                scale_scalar(ref_y, *y, zoom_y),
+                r * zoom_x,
+                r * zoom_y,
+                thickness * zoom_x,
+                color.clone()
+            ),
             Graphic::Line {x1, y1, x2, y2, thickness, color} => Graphic::Line {
                 x1: scale_scalar(ref_x, *x1, zoom_x),
                 y1: scale_scalar(ref_y, *y1, zoom_y),

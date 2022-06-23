@@ -70,6 +70,22 @@ impl Graphic {
 
         Graphic::Polygon {center_x, center_y, points, thickness, color}
     }
+    pub fn new_ellipse(x: f32, y: f32, rx: f32, ry: f32, thickness: f32, color: GColor) -> Graphic {
+
+        if rx == ry {
+            Graphic::new_circle(x, y, rx, thickness, color)
+        }
+
+        else {
+
+            let points = (0..18).map(
+                |theta| (x + rx * (theta as f32 / 17.0 * 6.283).cos(), y + ry * (theta as f32 / 17.0 * 6.283).sin())
+            ).collect();
+
+            Graphic::Polygon {center_x: x, center_y: y, points, thickness, color}
+        }
+    }
+
 }
 
 pub fn render(graphics: Vec<Graphic>, textures: &Vec<Texture2D>, fonts: &Vec<Font>) {
