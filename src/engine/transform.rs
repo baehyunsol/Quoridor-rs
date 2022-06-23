@@ -59,42 +59,42 @@ impl Graphic {
         }
     }
 
-    pub fn scale(&self, ref_x: f32, ref_y: f32, zoom: f32) -> Self {
+    pub fn scale(&self, ref_x: f32, ref_y: f32, zoom_x: f32, zoom_y: f32) -> Self {
 
         #[cfg(feature = "profile")]
-        if zoom <= 0.0 {
+        if zoom_x <= 0.0 || zoom_y <= 0.0 {
             unsafe {GLOBAL_ENV.raise_error("scaling factor has to be positive!")}
             return self.clone();
         }
 
         match self {
             Graphic::Rect {x, y, w, h, thickness, color} => Graphic::Rect {
-                x: scale_scalar(ref_x, *x, zoom),
-                y: scale_scalar(ref_y, *y, zoom),
-                w: w * zoom,
-                h: h * zoom,
-                thickness: thickness * zoom,
+                x: scale_scalar(ref_x, *x, zoom_x),
+                y: scale_scalar(ref_y, *y, zoom_y),
+                w: w * zoom_x,
+                h: h * zoom_y,
+                thickness: thickness * zoom_x,
                 color: color.clone()
             },
             Graphic::Circle {x, y, r, thickness, color} => Graphic::Circle {
-                x: scale_scalar(ref_x, *x, zoom),
-                y: scale_scalar(ref_y, *y, zoom),
-                r: r * zoom,
-                thickness: thickness * zoom,
+                x: scale_scalar(ref_x, *x, zoom_x),
+                y: scale_scalar(ref_y, *y, zoom_y),
+                r: r * zoom_x,  // oh no,...
+                thickness: thickness * zoom_x,
                 color: color.clone()
             },
             Graphic::Line {x1, y1, x2, y2, thickness, color} => Graphic::Line {
-                x1: scale_scalar(ref_x, *x1, zoom),
-                y1: scale_scalar(ref_y, *y1, zoom),
-                x2: scale_scalar(ref_x, *x2, zoom),
-                y2: scale_scalar(ref_y, *y2, zoom),
-                thickness: thickness * zoom,
+                x1: scale_scalar(ref_x, *x1, zoom_x),
+                y1: scale_scalar(ref_y, *y1, zoom_y),
+                x2: scale_scalar(ref_x, *x2, zoom_x),
+                y2: scale_scalar(ref_y, *y2, zoom_y),
+                thickness: thickness * zoom_x,
                 color: color.clone()
             },
             Graphic::Text {x, y, size, font, string, color} => Graphic::Text {
-                x: scale_scalar(ref_x, *x, zoom),
-                y: scale_scalar(ref_y, *y, zoom),
-                size: (*size as f32 * zoom) as u16,
+                x: scale_scalar(ref_x, *x, zoom_x),
+                y: scale_scalar(ref_y, *y, zoom_y),
+                size: (*size as f32 * zoom_x) as u16,
                 font: *font,
                 string: string.clone(),
                 color: color.clone()
@@ -103,39 +103,39 @@ impl Graphic {
                 unsafe {GLOBAL_ENV.raise_error("scaling an image is not implemented yet!");}
 
                 Graphic::Image {
-                    x: scale_scalar(ref_x, *x, zoom),
-                    y: scale_scalar(ref_y, *y, zoom),
+                    x: scale_scalar(ref_x, *x, zoom_x),
+                    y: scale_scalar(ref_y, *y, zoom_y),
                     image_index: *image_index,
                     color: color.clone()
                 }
             },
             Graphic::Triangle {x1, y1, x2, y2, x3, y3, thickness, color} => Graphic::Triangle {
-                x1: scale_scalar(ref_x, *x1, zoom),
-                y1: scale_scalar(ref_y, *y1, zoom),
-                x2: scale_scalar(ref_x, *x2, zoom),
-                y2: scale_scalar(ref_y, *y2, zoom),
-                x3: scale_scalar(ref_x, *x3, zoom),
-                y3: scale_scalar(ref_y, *y3, zoom),
-                thickness: thickness * zoom,
+                x1: scale_scalar(ref_x, *x1, zoom_x),
+                y1: scale_scalar(ref_y, *y1, zoom_y),
+                x2: scale_scalar(ref_x, *x2, zoom_x),
+                y2: scale_scalar(ref_y, *y2, zoom_y),
+                x3: scale_scalar(ref_x, *x3, zoom_x),
+                y3: scale_scalar(ref_y, *y3, zoom_y),
+                thickness: thickness * zoom_x,
                 color: color.clone()
             },
             Graphic::RoundRect {x, y, w, h, radius, thickness, color} => Graphic::RoundRect {
-                x: scale_scalar(ref_x, *x, zoom),
-                y: scale_scalar(ref_y, *y, zoom),
-                w: w * zoom,
-                h: h * zoom,
-                radius: radius * zoom,
-                thickness: thickness * zoom,
+                x: scale_scalar(ref_x, *x, zoom_x),
+                y: scale_scalar(ref_y, *y, zoom_y),
+                w: w * zoom_x,
+                h: h * zoom_y,
+                radius: radius * zoom_x,
+                thickness: thickness * zoom_x,
                 color: color.clone()
             },
             Graphic::Polygon {center_x, center_y, points, thickness, color} => Graphic::Polygon {
-                center_x: scale_scalar(ref_x, *center_x, zoom),
-                center_y: scale_scalar(ref_y, *center_y, zoom),
+                center_x: scale_scalar(ref_x, *center_x, zoom_x),
+                center_y: scale_scalar(ref_y, *center_y, zoom_y),
                 points: points.iter().map(
                     |(x, y)|
-                    (scale_scalar(ref_x, *x, zoom), scale_scalar(ref_y, *y, zoom))
+                    (scale_scalar(ref_x, *x, zoom_x), scale_scalar(ref_y, *y, zoom_y))
                 ).collect(),
-                thickness: thickness * zoom,
+                thickness: thickness * zoom_x,
                 color: color.clone()
             }
         }

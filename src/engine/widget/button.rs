@@ -16,6 +16,7 @@ impl Button {
 
     pub fn new(x: f32, y: f32, message: &str) -> Self {
         let mut base = Base::new(0.0, 0.0, 120.0, 32.0, message)
+            .set_font_size(21.0)
             .set_font_color(Color::new(255, 255, 255, 255))
             .set_horizontal_align(Alignment::Center)
             .set_vertical_align(Alignment::Center)

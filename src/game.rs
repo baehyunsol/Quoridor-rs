@@ -30,7 +30,14 @@ pub struct Game {
     last_turn_data: GameSaveData,
     last_state: GameState,  // state to transit from `ScreenTooSmall`
     buttons: Vec<Button>,
+    screen_scale: Option<ScreenScale>,
     frame_count: usize
+}
+
+struct ScreenScale {
+    offset_x: f32,
+    offset_y: f32,
+    zoom: f32
 }
 
 #[derive(Copy, Clone, PartialEq)]
@@ -64,9 +71,11 @@ impl Game {
             buttons: vec![
                 restart_button, undo_button, quit_button
             ],
+            screen_scale: None,
             frame_count: 0
         };
 
+        game.calc_screen_scale();
         game.locate_buttons();
 
         game
@@ -74,7 +83,7 @@ impl Game {
 
     fn locate_buttons(&mut self) {
 
-        let (screen_w, _) = unsafe {GLOBAL_ENV.screen_size};
+        let (screen_w, _) = self.get_screen_size();
         let x = screen_w - 150.0;
         let mut curr_y = 30.0;
 
@@ -219,25 +228,90 @@ impl Game {
         self.player2.position.0 == 0
     }
 
+    fn scale_mouse(&self, mouse_pos: (f32, f32)) -> (f32, f32) {
+
+        match &self.screen_scale {
+            None => mouse_pos,
+            Some(s) => ((mouse_pos.0 - s.offset_x) / s.zoom, (mouse_pos.1 - s.offset_y) / s.zoom)
+        }
+
+    }
+
+    fn scale_screen(&self, graphics: Vec<Graphic>) -> Vec<Graphic> {
+
+        match &self.screen_scale {
+            None => graphics,
+            Some(s) => {
+                graphics.iter().map(
+                    |graphic|
+                    graphic.scale(0.0, 0.0, s.zoom, s.zoom).move_rel(s.offset_x, s.offset_y)
+                ).collect()
+            }
+        }
+
+    }
+
+    fn calc_screen_scale(&mut self) {
+        let (screen_w, screen_h) = unsafe {GLOBAL_ENV.screen_size};
+
+        if screen_w >= 760.0 && screen_h >= 1160.0 {
+            self.screen_scale = None;
+        }
+
+        else {
+            let vert_zoom = screen_h / 800.0;
+            let horiz_zoom = screen_w / 1536.0;
+            let zoom = vert_zoom.min(horiz_zoom);
+
+            let (offset_x, offset_y) = if vert_zoom > horiz_zoom {
+                (0.0, (screen_h - 800.0 * zoom) / 2.0)
+            }
+
+            else {
+                ((screen_w - 1536.0 * zoom) / 2.0, 0.0)
+            };
+
+            self.screen_scale = Some(ScreenScale {
+                offset_x, offset_y, zoom
+            });
+        }
+
+    }
+
+    fn get_screen_size(&self) -> (f32, f32) {
+
+        if self.screen_scale.is_none() {
+            unsafe { GLOBAL_ENV.screen_size }
+        }
+
+        else {
+            (1536.0, 800.0)
+        }
+
+    }
+
 }
 
 impl Context for Game {
     fn frame(mut self: Box<Self>, inputs: Inputs) -> (Box<dyn Context>, Vec<Graphic>, Vec<SoundAction>) {
-        let graphics;
-        let (screen_w, screen_h) = unsafe {GLOBAL_ENV.screen_size};
+        let mut graphics;
+        let (screen_w, screen_h) = self.get_screen_size();
+        let (real_screen_w, real_screen_h) = unsafe { GLOBAL_ENV.screen_size };
+        let mouse_pos = self.scale_mouse(inputs.mouse_pos);
 
         self.frame_count += 1;
 
         if inputs.is_screen_size_changed {
             self.locate_buttons();
+            self.calc_screen_scale();
 
-            if self.state == GameState::ScreenTooSmall && screen_w >= 960.0 && screen_h >= 720.0 {
+            if self.state == GameState::ScreenTooSmall && real_screen_w >= 580.0 && real_screen_h >= 380.0 {
                 self.state = self.last_state;
             }
 
         }
 
-        if screen_w < 960.0 || screen_h < 720.0 {
+        if real_screen_w < 580.0 || real_screen_h < 380.0 {
             self.state = GameState::ScreenTooSmall;
             self.last_clock_tick = time::Instant::now();
         }
@@ -257,21 +331,21 @@ impl Context for Game {
             GameState::GameOver => {
 
                 for button in self.buttons.iter_mut() {
-                    button.check_mouse(inputs.mouse_pos);
+                    button.check_mouse(mouse_pos);
                 }
 
                 if inputs.mouse_pressed[0] {
 
-                    if self.buttons[0].check_mouse(inputs.mouse_pos) {
+                    if self.buttons[0].check_mouse(mouse_pos) {
                         self.curr_popup = Popup::new("Restart");
                         self.restart();
                     }
 
-                    else if self.buttons[1].check_mouse(inputs.mouse_pos) {
+                    else if self.buttons[1].check_mouse(mouse_pos) {
                         self.curr_popup = Popup::new("You cannot undo it. The game is over.");
                     }
 
-                    else if self.buttons[2].check_mouse(inputs.mouse_pos) {
+                    else if self.buttons[2].check_mouse(mouse_pos) {
                         unsafe {GLOBAL_ENV.quit()}
                     }
 
@@ -300,6 +374,8 @@ impl Context for Game {
                     self.curr_popup.render()
                 ].concat();
 
+                graphics = self.scale_screen(graphics);
+
                 (self, graphics, vec![])
             }
             GameState::Playing => {
@@ -311,12 +387,12 @@ impl Context for Game {
                 }
 
                 for button in self.buttons.iter_mut() {
-                    button.check_mouse(inputs.mouse_pos);
+                    button.check_mouse(mouse_pos);
                 }
 
                 let (box_x, box_y) = ((screen_w - BOARD_SIZE) / 2.0, (screen_h - BOARD_SIZE) / 1.2);
 
-                let (mouse_x, mouse_y) = inputs.mouse_pos;
+                let (mouse_x, mouse_y) = mouse_pos;
                 let mouse_index = get_cursor_index(mouse_x, mouse_y, box_x, box_y);
 
                 let mut board_graphics = self.draw_board(box_x, box_y);
@@ -446,17 +522,17 @@ impl Context for Game {
 
                     }
 
-                    if self.buttons[0].check_mouse(inputs.mouse_pos) {
+                    if self.buttons[0].check_mouse(mouse_pos) {
                         self.curr_popup = Popup::new("Restart");
                         self.restart();
                     }
 
-                    else if self.buttons[1].check_mouse(inputs.mouse_pos) {
+                    else if self.buttons[1].check_mouse(mouse_pos) {
                         self.curr_popup = Popup::new("Undo");
                         self.undo();
                     }
 
-                    else if self.buttons[2].check_mouse(inputs.mouse_pos) {
+                    else if self.buttons[2].check_mouse(mouse_pos) {
                         unsafe {GLOBAL_ENV.quit()}
                     }
 
@@ -480,6 +556,8 @@ impl Context for Game {
                     self.draw_ui(box_x, box_y),
                     self.curr_popup.render()
                 ].concat();
+
+                graphics = self.scale_screen(graphics);
 
                 (self, graphics, vec![])
             }
