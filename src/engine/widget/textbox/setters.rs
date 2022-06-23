@@ -1,5 +1,5 @@
-use crate::widget::align::Alignment;
-use crate::color::Color;
+use crate::engine::widget::align::Alignment;
+use crate::engine::color::Color;
 use super::TextBox;
 
 impl TextBox {

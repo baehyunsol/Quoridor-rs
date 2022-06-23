@@ -1,6 +1,6 @@
 use crate::game::Game;
-use crate::graphic::Graphic;
-use crate::color::Color;
+use crate::engine::graphic::Graphic;
+use crate::engine::color::Color;
 
 impl Game {
 

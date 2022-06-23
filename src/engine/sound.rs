@@ -3,7 +3,7 @@
 use macroquad::audio::{Sound, PlaySoundParams, play_sound, play_sound_once, stop_sound};
 
 #[cfg(feature = "profile")]
-use crate::global::GLOBAL_ENV;
+use super::global::GLOBAL_ENV;
 
 #[derive(Copy, Clone)]
 pub enum SoundAction {
@@ -60,7 +60,7 @@ impl SoundManager {
 
                     #[cfg(feature = "profile")]
                     if *sound >= self.sounds.len() {
-                        unsafe { GLOBAL_ENV.raise_error("Uninitialized sound used!".to_string()); }
+                        unsafe { GLOBAL_ENV.raise_error("Uninitialized sound used!"); }
                         break;
                     }
 
@@ -71,7 +71,7 @@ impl SoundManager {
 
                     #[cfg(feature = "profile")]
                     if *sound >= self.sounds.len() {
-                        unsafe { GLOBAL_ENV.raise_error("Uninitialized sound used!".to_string()); }
+                        unsafe { GLOBAL_ENV.raise_error("Uninitialized sound used!"); }
                         break;
                     }
 
@@ -85,7 +85,7 @@ impl SoundManager {
 
                     #[cfg(feature = "profile")]
                     if *sound >= self.sounds.len() {
-                        unsafe { GLOBAL_ENV.raise_error("Uninitialized sound used!".to_string()); }
+                        unsafe { GLOBAL_ENV.raise_error("Uninitialized sound used!"); }
                         break;
                     }
 

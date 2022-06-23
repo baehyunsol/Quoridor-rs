@@ -1,6 +1,6 @@
 use super::Base;
-use crate::color::Color;
-use crate::widget::{align::Alignment, scale::Scale, outline::Outline};
+use crate::engine::color::Color;
+use crate::engine::widget::{align::Alignment, scale::Scale, outline::Outline};
 
 impl Base {
 

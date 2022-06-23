@@ -1,5 +1,5 @@
 use macroquad::{text::{Font, load_ttf_font_from_bytes}, texture::Texture2D, audio::{Sound, load_sound_from_bytes}};
-use crate::file_io::read_bytes;
+use super::file_io::read_bytes;
 
 /*
 DO NOT call these functions inside the game loop!!!

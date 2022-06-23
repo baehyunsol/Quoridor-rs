@@ -1,10 +1,10 @@
-use crate::context::Context;
-use crate::inputs::Inputs;
-use crate::graphic::Graphic;
-use crate::sound::SoundAction;
-use crate::global::GLOBAL_ENV;
-use crate::widget::{textbox::TextBox, align::Alignment};
-use crate::color::Color;
+use super::context::Context;
+use super::inputs::Inputs;
+use super::graphic::Graphic;
+use super::sound::SoundAction;
+use super::global::GLOBAL_ENV;
+use super::widget::{textbox::TextBox, align::Alignment};
+use super::color::Color;
 
 pub struct ErrorHandler {
     message: String

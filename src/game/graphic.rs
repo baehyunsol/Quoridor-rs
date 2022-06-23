@@ -1,7 +1,7 @@
 use super::{Game, BOARD_SIZE};
-use crate::graphic::Graphic;
-use crate::color::Color;
-use crate::widget::textbox::TextBox;
+use crate::engine::graphic::Graphic;
+use crate::engine::color::Color;
+use crate::engine::widget::textbox::TextBox;
 
 impl Game {
 

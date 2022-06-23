@@ -1,5 +1,5 @@
-use crate::color::Color;
-use crate::graphic::Graphic;
+use crate::engine::color::Color;
+use crate::engine::graphic::Graphic;
 use super::{
     TOP, BOTTOM, LEFT, RIGHT,
     outline::Outline

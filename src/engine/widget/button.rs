@@ -2,8 +2,8 @@ use super::{
     base::Base,
     align::Alignment
 };
-use crate::graphic::Graphic;
-use crate::color::Color;
+use crate::engine::graphic::Graphic;
+use crate::engine::color::Color;
 
 pub struct Button {
     x: f32, y: f32,

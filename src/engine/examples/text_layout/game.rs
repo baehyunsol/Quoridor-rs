@@ -60,7 +60,7 @@ impl Context for Game {
 
         if inputs.key_down[KEY_DOWN] {
 
-            if inputs.key_down[KEY_LEFTSHIFT] || inputs.key_down[KEY_RIGHTSHIFT] {
+            if inputs.key_down[KEY_SHIFT] {
                 self.font_size -= 0.5;
 
                 if self.font_size < 5.0 {
@@ -82,7 +82,7 @@ impl Context for Game {
 
         if inputs.key_down[KEY_UP] {
 
-            if inputs.key_down[KEY_LEFTSHIFT] || inputs.key_down[KEY_RIGHTSHIFT] {
+            if inputs.key_down[KEY_SHIFT] {
                 self.font_size += 0.5;
 
                 if self.font_size > 50.0 {

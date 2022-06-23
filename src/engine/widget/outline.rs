@@ -1,4 +1,4 @@
-use crate::color::Color;
+use crate::engine::color::Color;
 
 #[derive(Clone)]
 pub struct Outline {

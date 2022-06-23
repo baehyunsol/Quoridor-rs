@@ -1,16 +1,16 @@
 mod save_data;
 mod graphic;
 
-use crate::context::Context;
-use crate::inputs::Inputs;
-use crate::graphic::Graphic;
-use crate::global::GLOBAL_ENV;
-use crate::widget::{
+use crate::engine::context::Context;
+use crate::engine::inputs::Inputs;
+use crate::engine::graphic::Graphic;
+use crate::engine::global::GLOBAL_ENV;
+use crate::engine::widget::{
     textbox::TextBox,
     button::Button
 };
-use crate::sound::SoundAction;
-use crate::color::Color;
+use crate::engine::sound::SoundAction;
+use crate::engine::color::Color;
 use crate::player::Player;
 use crate::popup::Popup;
 use save_data::GameSaveData;
@@ -48,7 +48,7 @@ impl Game {
         let undo_button = Button::new(0.0, 0.0, "Undo");
         let quit_button = Button::new(0.0, 0.0, "Quit");
 
-        Game {
+        let mut game = Game {
             state: GameState::Playing,
             player1: Player::new(true),
             player2: Player::new(false),
@@ -65,7 +65,11 @@ impl Game {
                 restart_button, undo_button, quit_button
             ],
             frame_count: 0
-        }
+        };
+
+        game.locate_buttons();
+
+        game
     }
 
     fn locate_buttons(&mut self) {
@@ -163,7 +167,7 @@ impl Game {
 
             else {
                 // stationary? that's illegal!
-                unsafe { GLOBAL_ENV.raise_error(format!("Something went wrong: file `game.rs`, func `is_movable_at`, dir: {:?}", dir)); }
+                unsafe { GLOBAL_ENV.raise_error(&format!("Something went wrong: file `game.rs`, func `is_movable_at`, dir: {:?}", dir)); }
                 true
             }
 
@@ -181,7 +185,7 @@ impl Game {
 
             else {
                 // stationary? that's illegal!
-                unsafe { GLOBAL_ENV.raise_error(format!("Something went wrong: file `game.rs`, func `is_movable_at`, dir: {:?}", dir)); }
+                unsafe { GLOBAL_ENV.raise_error(&format!("Something went wrong: file `game.rs`, func `is_movable_at`, dir: {:?}", dir)); }
                 true
             }
 
@@ -189,7 +193,7 @@ impl Game {
 
         else {
             // moving in diagonal way? that's illegal!
-            unsafe { GLOBAL_ENV.raise_error(format!("Something went wrong: file `game.rs`, func `is_movable_at`, dir: {:?}", dir)); }
+            unsafe { GLOBAL_ENV.raise_error(&format!("Something went wrong: file `game.rs`, func `is_movable_at`, dir: {:?}", dir)); }
             true
         };
 

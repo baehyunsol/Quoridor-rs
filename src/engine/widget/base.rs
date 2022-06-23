@@ -1,5 +1,5 @@
-use crate::color::Color;
-use crate::graphic::Graphic;
+use crate::engine::color::Color;
+use crate::engine::graphic::Graphic;
 use super::{
     align::{Alignment, Movable}, scale::{Scale, Scalable},
     rect::Rect, textbox::TextBox, outline::{Outline, set_radius},

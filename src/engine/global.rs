@@ -4,6 +4,8 @@ pub struct GlobalEnv {
     pub messages: Vec<EnvMessage>,
     pub screen_size: (f32, f32),
     pub is_font_available: bool,
+
+    // add more fields for your game!
 }
 
 pub static mut GLOBAL_ENV: GlobalEnv = GlobalEnv::new();
@@ -27,8 +29,8 @@ impl GlobalEnv {
     }
 
     // for unrecoverable errors
-    pub fn raise_error(&mut self, message: String) {
-        self.messages.push(EnvMessage::Error(message));
+    pub fn raise_error(&mut self, message: &str) {
+        self.messages.push(EnvMessage::Error(message.to_string()));
     }
 
     // load new image at image_index

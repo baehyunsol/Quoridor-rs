@@ -1,5 +1,5 @@
-use crate::graphic::Graphic;
-use crate::color::Color;
+use crate::engine::graphic::Graphic;
+use crate::engine::color::Color;
 
 #[derive(Clone)]
 pub struct Player {

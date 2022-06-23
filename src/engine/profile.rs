@@ -1,10 +1,10 @@
 #![allow(dead_code)]
 
 use std::time;
-use crate::widget::textbox::TextBox;
-use crate::graphic::Graphic;
-use crate::color::Color;
-use crate::global::GLOBAL_ENV;
+use super::widget::textbox::TextBox;
+use super::graphic::Graphic;
+use super::color::Color;
+use super::global::GLOBAL_ENV;
 
 pub struct Profiler {
     text_count: usize,
@@ -165,7 +165,7 @@ fn fn_end(index: usize) {
 
         match FUNCTION_PROFILERS[index].time_stack.pop() {
             None => {
-                GLOBAL_ENV.raise_error("Something went wrong with the function-profilers!".to_string());
+                GLOBAL_ENV.raise_error("Something went wrong with the function-profilers!");
             }
             Some(start_time) => {
                 FUNCTION_PROFILERS[index].time_nano += end_time.duration_since(start_time.clone()).as_nanos();
