@@ -116,6 +116,9 @@ impl Game {
         self.player1_turn = true;
         self.last_turn_data = GameSaveData::dummy();
 
+        self.state = GameState::Playing;
+        self.last_state = GameState::Playing;
+
         self.last_clock_tick = time::Instant::now();
     }
 
