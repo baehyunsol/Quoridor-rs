@@ -10,7 +10,7 @@ It only supports 1 vs 1. No CPU player, no multiplayer.
 
 ## Install
 
-Pre-installed binary can be found in [itch.io](https://baehyunsol.itch.io/quoridor).
+Pre-compiled binary can be found in [itch.io](https://baehyunsol.itch.io/quoridor).
 
 ---
 
