@@ -1,6 +1,8 @@
 use super::{
     base::Base,
-    align::Alignment
+    align::Alignment,
+    scale::Scalable,
+    outline::Outline
 };
 use crate::engine::graphic::Graphic;
 use crate::engine::color::Color;
@@ -9,6 +11,7 @@ pub struct Button {
     x: f32, y: f32,
     base: Base,
     graphics: Vec<Vec<Graphic>>,
+    offset: Vec<(f32, f32)>,
     hover: usize
 }
 
@@ -27,12 +30,16 @@ impl Button {
 
         for i in 0..25 {
             base.set_background(Some(Color::new(i * 6, i * 6, i * 6, 255)));
+            base.set_outlines(Some(Outline::new(Color::new(255, 255, 255, i * 4), 4.0)));
+            base.set_w(120.0 + i as f32);
+            base.set_h(32.0 + i as f32 / 4.0);
             graphics.push(base.render());
         }
 
         Button {
             x, y,
-            base, graphics, hover: 0
+            base, graphics, hover: 0,
+            offset: (0..25).map(|i| (12.0 - i as f32 / 2.0, 3.0 - i as f32 / 8.0)).collect()
         }
     }
 
@@ -58,7 +65,15 @@ impl Button {
             self.hover -= 1;
         }
 
-        self.graphics[self.hover].iter().map(|graphic| graphic.move_rel(self.x, self.y)).collect()
+        self.graphics[self.hover].iter().map(
+            |graphic| {
+                let (offset_x, offset_y) = self.offset[self.hover];
+                graphic.move_rel(
+                    self.x + offset_x,
+                    self.y + offset_y
+                )
+            }
+        ).collect()
     }
 
 }
