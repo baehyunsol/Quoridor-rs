@@ -8,6 +8,10 @@ It only supports 1 vs 1. No CPU player, no multiplayer.
 
 ![screenshot](screenshot.png)
 
+## Install
+
+Pre-installed binary can be found in [itch.io](https://baehyunsol.itch.io/quoridor).
+
 ---
 
 The font used in this game is under the [OFL](https://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL) license.
