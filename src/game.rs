@@ -13,6 +13,7 @@ use crate::engine::sound::SoundAction;
 use crate::engine::color::Color;
 use crate::player::Player;
 use crate::popup::Popup;
+use crate::mouse_trace::MouseTraces;
 use save_data::GameSaveData;
 use std::time;
 
@@ -31,6 +32,7 @@ pub struct Game {
     last_state: GameState,  // state to transit from `ScreenTooSmall`
     buttons: Vec<Button>,
     screen_scale: Option<ScreenScale>,
+    mouse_traces: MouseTraces,
     frame_count: usize
 }
 
@@ -72,6 +74,7 @@ impl Game {
                 restart_button, undo_button, quit_button
             ],
             screen_scale: None,
+            mouse_traces: MouseTraces::new(),
             frame_count: 0
         };
 
@@ -402,19 +405,13 @@ impl Context for Game {
 
                 match mouse_index {
                     Index::Box(x, y) => {
-                        board_graphics.push(
-                            Graphic::new_round_rect(box_x + (x * 72) as f32 + 21.0, box_y + (y * 72) as f32 + 21.0, 48.0, 48.0, 12.0, 0.0, Color::selection_mask())
-                        );
+                        self.mouse_traces.add(box_x + (x * 72) as f32 + 21.0, box_y + (y * 72) as f32 + 21.0, 48.0, 48.0);
                     }
                     Index::Vertical(x, y) if x < 9 && y < 8 && x > 0 => {
-                        board_graphics.push(
-                            Graphic::new_round_rect(box_x + (x * 72) as f32 + 3.0, box_y + (y * 72) as f32 + 18.0, 12.0, 126.0, 6.0, 0.0, Color::selection_mask())
-                        );
+                        self.mouse_traces.add(box_x + (x * 72) as f32 + 3.0, box_y + (y * 72) as f32 + 18.0, 12.0, 126.0);
                     }
                     Index::Horizontal(x, y) if y < 9 && x < 8 && y > 0 => {
-                        board_graphics.push(
-                            Graphic::new_round_rect(box_x + (x * 72) as f32 + 18.0, box_y + (y * 72) as f32 + 3.0, 126.0, 12.0, 6.0, 0.0, Color::selection_mask())
-                        );
+                        self.mouse_traces.add(box_x + (x * 72) as f32 + 18.0, box_y + (y * 72) as f32 + 3.0, 126.0, 12.0);
                     }
                     _ => {}
                 }
@@ -557,6 +554,7 @@ impl Context for Game {
                     board_graphics,
                     self.draw_player(box_x, box_y),
                     self.draw_ui(box_x, box_y),
+                    self.mouse_traces.render(),
                     self.curr_popup.render()
                 ].concat();
 

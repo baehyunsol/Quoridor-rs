@@ -4,6 +4,7 @@ mod engine;
 mod dfs;
 mod player;
 mod popup;
+mod mouse_trace;
 
 use macroquad::prelude::*;
 use engine::context::Context;
