@@ -6,18 +6,17 @@ pub struct Player {
     pub walls: usize,
     pub position: (i32, i32),
     color: Color,
-    trace: Vec<(i32, i32)>
+    trace: Vec<(i32, i32)>,
 }
 
 impl Player {
-
     pub fn new(is_player1: bool) -> Self {
         let position = if is_player1 { (0, 4) } else { (8, 4) }; 
         Player {
             walls: 10,
             position,
             color: if is_player1 { Color::player1_trace() } else { Color::player2_trace() },
-            trace: vec![position]
+            trace: vec![position],
         }
     }
 
@@ -37,12 +36,11 @@ impl Player {
                     box_x + (self.trace[i + 1].0 * 72) as f32 + 45.0,
                     box_y + (self.trace[i + 1].1 * 72) as f32 + 45.0,
                     6.0,
-                    self.color.clone()
+                    self.color.clone(),
                 )
             );
         }
 
         result
     }
-
 }

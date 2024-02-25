@@ -4,7 +4,6 @@ use crate::engine::color::Color;
 use crate::engine::widget::textbox::TextBox;
 
 impl Game {
-
     pub fn draw_ui(&mut self, box_x: f32, box_y: f32) -> Vec<Graphic> {
         let mut result = Vec::with_capacity(1000);
         let timer = TextBox::new(
@@ -13,26 +12,94 @@ impl Game {
             box_y - 60.0,
             210.0,
             60.0,
-            51.0
+            51.0,
         ).set_color(Color::ui()).align_center().render();
 
         for i in 0..self.player1.walls {
-            result.push(Graphic::new_rect(box_x - 80.0, (i * 72) as f32 + box_y, 60.0, 18.0, 0.0, Color::wall()));
+            result.push(Graphic::new_rect(
+                box_x - 80.0,
+                (i * 72) as f32 + box_y,
+                60.0,
+                18.0,
+                0.0,
+                Color::wall(),
+            ));
         }
 
         for i in 0..self.player2.walls {
-            result.push(Graphic::new_rect(box_x + BOARD_SIZE + 20.0, (i * 72) as f32 + box_y, 60.0, 18.0, 0.0, Color::wall()));
+            result.push(Graphic::new_rect(
+                box_x + BOARD_SIZE + 20.0,
+                (i * 72) as f32 + box_y,
+                60.0,
+                18.0,
+                0.0,
+                Color::wall(),
+            ));
         }
 
         if self.player1_turn {
-            result.push(Graphic::new_triangle(box_x, box_y - 40.0, box_x + 90.0, box_y - 70.0, box_x + 90.0, box_y - 10.0, 0.0, Color::player1_normal()));
-            result.push(Graphic::new_triangle(box_x + BOARD_SIZE - 20.0, box_y - 40.0, box_x + BOARD_SIZE - 60.0, box_y - 50.0, box_x + BOARD_SIZE - 60.0, box_y - 30.0, 0.0, Color::player2_normal()));
+            result.push(Graphic::new_triangle(
+                box_x,
+                box_y - 40.0,
+                box_x + 90.0,
+                box_y - 70.0,
+                box_x + 90.0,
+                box_y - 10.0,
+                0.0,
+                Color::player1_normal(),
+            ));
+            result.push(Graphic::new_triangle(
+                box_x + BOARD_SIZE - 20.0,
+                box_y - 40.0,
+                box_x + BOARD_SIZE - 60.0,
+                box_y - 50.0,
+                box_x + BOARD_SIZE - 60.0,
+                box_y - 30.0,
+                0.0,
+                Color::player2_normal(),
+            ));
         }
 
         else {
-            result.push(Graphic::new_triangle(box_x + 20.0, box_y - 40.0, box_x + 60.0, box_y - 50.0, box_x + 60.0, box_y - 30.0, 0.0, Color::player1_normal()));
-            result.push(Graphic::new_triangle(box_x + BOARD_SIZE, box_y - 40.0, box_x + BOARD_SIZE - 90.0, box_y - 70.0, box_x + BOARD_SIZE - 90.0, box_y - 10.0, 0.0, Color::player2_normal()));
+            result.push(Graphic::new_triangle(
+                box_x + 20.0,
+                box_y - 40.0,
+                box_x + 60.0,
+                box_y - 50.0,
+                box_x + 60.0,
+                box_y - 30.0,
+                0.0,
+                Color::player1_normal(),
+            ));
+            result.push(Graphic::new_triangle(
+                box_x + BOARD_SIZE,
+                box_y - 40.0,
+                box_x + BOARD_SIZE - 90.0,
+                box_y - 70.0,
+                box_x + BOARD_SIZE - 90.0,
+                box_y - 10.0,
+                0.0,
+                Color::player2_normal(),
+            ));
         }
+
+        let p1_info = TextBox::new(
+            "p1",
+            box_x - 90.0,
+            box_y - 80.0,
+            210.0,
+            40.0,
+            21.0,
+        ).set_color(Color::ui()).align_center().render();
+
+        let p2_info = TextBox::new(
+            if self.is_cpu_game { "computer" } else { "p2" },
+            box_x + BOARD_SIZE - 120.0,
+            box_y - 80.0,
+            210.0,
+            40.0,
+            21.0,
+        ).set_color(Color::ui()).align_center().render();
 
         let mut buttons = vec![];
 
@@ -40,7 +107,13 @@ impl Game {
             buttons.push(button.render());
         }
 
-        vec![result, timer, buttons.concat()].concat()
+        vec![
+            result,
+            timer,
+            p1_info,
+            p2_info,
+            buttons.concat(),
+        ].concat()
     }
 
     pub fn draw_board(&self, box_x: f32, box_y: f32) -> Vec<Graphic> {
@@ -49,55 +122,41 @@ impl Game {
         board_graphics.push(Graphic::new_round_rect(box_x, box_y, BOARD_SIZE, BOARD_SIZE, 32.0, 0.0, Color::board_normal()));
 
         for x in 0..9 {
-
             for y in 0..9 {
                 board_graphics.push(
                     Graphic::new_round_rect(box_x + (x * 72) as f32 + 18.0, box_y + (y * 72) as f32 + 18.0, 54.0, 54.0, 8.0, 0.0, Color::box_normal())
                 );
             }
-
         }
 
         for (y, row) in self.horizontal_walls.iter().enumerate() {
-
             for (x, wall) in row.iter().enumerate() {
-
                 if *wall {
                     board_graphics.push(
                         Graphic::new_rect(box_x + (x * 72) as f32 + 24.0, box_y + (y * 72) as f32 + 5.0, 42.0, 8.0, 0.0, Color::wall())
                     );
                 }
-
             }
-
         }
 
         for (x, column) in self.vertical_walls.iter().enumerate() {
-
             for (y, wall) in column.iter().enumerate() {
-
                 if *wall {
                     board_graphics.push(
                         Graphic::new_rect(box_x + (x * 72) as f32 + 5.0, box_y + (y * 72) as f32 + 24.0, 8.0, 42.0, 0.0, Color::wall())
                     );
                 }
-
             }
-
         }
 
         for (x, row) in self.cross_walls.iter().enumerate() {
-
             for (y, wall) in row.iter().enumerate() {
-
                 if *wall {
                     board_graphics.push(
-                        Graphic::new_rect(box_x + (x * 72) as f32 + 5.0, box_y + (y * 72) as f32 + 5.0, 8.0, 8.0, 0.0, Color::wall())
+                        Graphic::new_rect(box_x + (x * 72) as f32 + 5.0, box_y + (y * 72) as f32 + 5.0, 8.0, 8.0, 0.0, Color::wall()),
                     );
                 }
-
             }
-
         }
 
         board_graphics
@@ -109,13 +168,13 @@ impl Game {
                 box_x + (self.player1.position.0 * 72) as f32 + 45.0,
                 box_y + (self.player1.position.1 * 72) as f32 + 45.0,
                 16.0, 0.0,
-                Color::player1_normal()
+                Color::player1_normal(),
             ),
             Graphic::new_circle(
                 box_x + (self.player2.position.0 * 72) as f32 + 45.0,
                 box_y + (self.player2.position.1 * 72) as f32 + 45.0,
                 16.0, 0.0,
-                Color::player2_normal()
+                Color::player2_normal(),
             ),
         ];
 
@@ -131,12 +190,11 @@ impl Game {
                     box_x + (x * 72) as f32 + 45.0,
                     box_y + (y * 72) as f32 + 45.0,
                     9.0, 0.0,
-                    curr_color.clone()
+                    curr_color.clone(),
                 ),
             );
         }
 
         result
     }
-
 }

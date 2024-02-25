@@ -11,12 +11,11 @@ pub struct GlobalEnv {
 pub static mut GLOBAL_ENV: GlobalEnv = GlobalEnv::new();
 
 impl GlobalEnv {
-
     pub const fn new() -> Self {
         GlobalEnv {
             messages: vec![],
             is_font_available: false,
-            screen_size: (0.0, 0.0)
+            screen_size: (0.0, 0.0),
         }
     }
 
@@ -50,7 +49,6 @@ impl GlobalEnv {
     pub fn grab_cursor(&mut self, grab: bool) {
         self.messages.push(EnvMessage::GrabCursor(grab));
     }
-
 }
 
 pub enum EnvMessage {

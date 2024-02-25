@@ -12,7 +12,6 @@ pub struct GameSaveData {
 }
 
 impl GameSaveData {
-
     pub fn dummy() -> Self {
         GameSaveData {
             player1: Player::new(true),
@@ -21,7 +20,7 @@ impl GameSaveData {
             vertical_walls: vec![vec![false; 9]; 10],
             horizontal_walls: vec![vec![false; 9]; 10],
             cross_walls: vec![vec![false; 10]; 10],
-            player1_turn: true
+            player1_turn: true,
         }
     }
 
@@ -33,7 +32,7 @@ impl GameSaveData {
             vertical_walls: game.vertical_walls.clone(),
             horizontal_walls: game.horizontal_walls.clone(),
             cross_walls: game.cross_walls.clone(),
-            player1_turn: game.player1_turn
+            player1_turn: game.player1_turn,
         }
     }
 }

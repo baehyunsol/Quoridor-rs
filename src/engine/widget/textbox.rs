@@ -16,7 +16,7 @@ pub struct TextBox {
     pub underline: Option<Color>,
     pub background: Option<Color>,
     rendered: Vec<Graphic>,
-    is_rendered: bool
+    is_rendered: bool,
 }
 
 impl TextBox {
@@ -31,12 +31,11 @@ impl TextBox {
             underline: None,
             background: None,
             color: Color::new(0, 0, 0, 255),
-            rendered: vec![]
+            rendered: vec![],
         }
     }
 
     pub fn render(&mut self) -> Vec<Graphic> {
-
         if self.is_rendered {
             return self.rendered.clone();
         }
@@ -53,13 +52,10 @@ impl TextBox {
             }
 
             else {
-
                 for line in break_line(&lines[i], char_per_line).into_iter() {
                     fitted_lines.push(line);
                 }
-
             }
-
         }
 
         self.rendered = Vec::with_capacity(self.string.len());
@@ -82,7 +78,6 @@ impl TextBox {
         let font_width = self.font_size * FONT_WIDTH_RATIO;
 
         for line in fitted_lines.iter() {
-
             if curr_y < self.y {
                 curr_y += vertical_gap;
                 continue;
@@ -105,12 +100,11 @@ impl TextBox {
                     if line.len() > 0 {
                         self.rendered.push(Graphic::new_rect(curr_x, curr_y - self.font_size, horizontal_gap * (line.len() as f32 - 1.0) + font_width, self.font_size, 0.0, color.clone()));
                     }
-                }
-                _ => {}
+                },
+                _ => {},
             }
 
             for character in line.iter() {
-
                 if *character != 32 {
                     self.rendered.push(Graphic::new_text(curr_x, curr_y, self.font, String::from_utf16(&[*character]).unwrap(), font_size, self.color.clone()));
                 }
@@ -121,8 +115,8 @@ impl TextBox {
             match &self.underline {
                 Some(color) => {
                     self.rendered.push(Graphic::new_line(start_x, curr_y, curr_x, curr_y, self.font_size / 16.0 + 1.0, color.clone()));
-                }
-                _ => {}
+                },
+                _ => {},
             }
 
             curr_y += vertical_gap;
@@ -130,7 +124,6 @@ impl TextBox {
             if curr_y >= self.y + self.h {
                 break;
             }
-
         }
 
         self.rendered.clone()
@@ -138,25 +131,22 @@ impl TextBox {
 }
 
 fn break_line(long_line: &[u16], char_per_line: usize) -> Vec<Vec<u16>> {
-
     if long_line.len() <= char_per_line {
         return vec![long_line.to_vec()];
     }
 
     for index in 0..char_per_line / 3 {
-
         if long_line[char_per_line - index] == ' ' as u16 {
             return vec![
                 vec![long_line[0..char_per_line - index + 1].to_vec()],
-                break_line(&long_line[char_per_line - index + 1..long_line.len()], char_per_line)
+                break_line(&long_line[char_per_line - index + 1..long_line.len()], char_per_line),
             ].concat();
         }
-
     }
 
     return vec![
         vec![long_line[0..char_per_line + 1].to_vec()],
-        break_line(&long_line[char_per_line + 1..long_line.len()], char_per_line)
+        break_line(&long_line[char_per_line + 1..long_line.len()], char_per_line),
     ].concat();
 }
 

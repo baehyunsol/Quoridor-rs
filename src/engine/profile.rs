@@ -72,7 +72,7 @@ impl Profiler {
         self.graphic_count = 0;
         self.frame_count += 1;
 
-        self.last_ticks[self.frame_count % 64] = tick;
+        self.last_ticks[self.frame_count & 63] = tick;
     }
 
     pub fn calc_fps(&self) -> f32 {
@@ -82,7 +82,7 @@ impl Profiler {
         }
 
         else {
-            let frames_64 = self.last_ticks[self.frame_count % 64].duration_since(self.last_ticks[(self.frame_count + 1) % 64]).as_micros() as f32;
+            let frames_64 = self.last_ticks[self.frame_count & 63].duration_since(self.last_ticks[(self.frame_count + 1) & 63]).as_micros() as f32;
             1_000_000.0 / (frames_64 / 64.0)
         }
 

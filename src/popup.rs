@@ -5,15 +5,14 @@ use crate::engine::color::Color;
 
 pub struct Popup {
     graphics: Base,
-    life: u8
+    life: u8,
 }
 
 impl Popup {
-
     pub fn dummy() -> Self {
         Popup {
             graphics: Base::default(),
-            life: 0
+            life: 0,
         }
     }
 
@@ -36,12 +35,12 @@ impl Popup {
             .to_owned();
 
         Popup {
-            graphics, life: 127
+            graphics,
+            life: 127,
         }
     }
 
     pub fn render(&mut self) -> Vec<Graphic> {
-
         if self.life > 10 {
             self.life -= 2;
             self.graphics
@@ -54,7 +53,5 @@ impl Popup {
         else {
             vec![]
         }
-
     }
-
 }

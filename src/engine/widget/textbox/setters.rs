@@ -3,7 +3,6 @@ use crate::engine::color::Color;
 use super::TextBox;
 
 impl TextBox {
-
     pub fn set_horizontal_align(&mut self, horizontal_align: Alignment) -> &mut Self {
         self.horizontal_align = horizontal_align;
         self.is_rendered = false;
@@ -66,5 +65,4 @@ impl TextBox {
         self.is_rendered = false;
         self
     }
-
 }

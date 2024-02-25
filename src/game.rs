@@ -28,6 +28,7 @@ pub struct Game {
     pub cross_walls: Vec<Vec<bool>>,
     curr_popup: Popup,
     pub player1_turn: bool,
+    is_cpu_game: bool,
     last_turn_data: GameSaveData,
     last_state: GameState,  // state to transit from `ScreenTooSmall`
     buttons: Vec<Button>,
@@ -50,10 +51,9 @@ enum GameState {
 }
 
 impl Game {
-
     pub fn new() -> Self {
-
-        let restart_button = Button::new(0.0, 0.0, "Restart");
+        let restart_button_vcpu = Button::new(0.0, 0.0, "New: vs CPU");
+        let restart_button_vperson = Button::new(0.0, 0.0, "New: vs HUMAN");
         let undo_button = Button::new(0.0, 0.0, "Undo");
         let quit_button = Button::new(0.0, 0.0, "Quit");
 
@@ -68,10 +68,14 @@ impl Game {
             clock: 0.0,
             curr_popup: Popup::dummy(),
             player1_turn: true,
+            is_cpu_game: false,
             last_turn_data: GameSaveData::dummy(),
             last_state: GameState::Playing,
             buttons: vec![
-                restart_button, undo_button, quit_button
+                restart_button_vcpu,
+                restart_button_vperson,
+                undo_button,
+                quit_button,
             ],
             screen_scale: None,
             mouse_traces: MouseTraces::new(),
@@ -86,7 +90,7 @@ impl Game {
 
     fn locate_buttons(&mut self) {
         let (screen_w, _) = self.get_screen_size();
-        let x = screen_w - 150.0;
+        let x = screen_w - 210.0;
         let mut curr_y = 30.0;
 
         for button in self.buttons.iter_mut() {
@@ -290,7 +294,7 @@ impl Context for Game {
 
         self.frame_count += 1;
 
-        if inputs.is_screen_size_changed {
+        if inputs.is_screen_size_changed || self.frame_count & 7 == 7 {
             self.locate_buttons();
             self.calc_screen_scale();
 
@@ -494,17 +498,21 @@ impl Context for Game {
                     }
 
                     if self.buttons[0].check_mouse(mouse_pos) {
+                        self.curr_popup = Popup::new("CPU game is not implemented yet!");
+                    }
+
+                    else if self.buttons[1].check_mouse(mouse_pos) {
                         self.curr_popup = Popup::new("Restart");
                         self.restart();
                     }
 
-                    else if self.buttons[1].check_mouse(mouse_pos) {
+                    else if self.buttons[2].check_mouse(mouse_pos) {
                         self.curr_popup = Popup::new("Undo");
                         self.undo();
                     }
 
-                    else if self.buttons[2].check_mouse(mouse_pos) {
-                        unsafe {GLOBAL_ENV.quit()}
+                    else if self.buttons[3].check_mouse(mouse_pos) {
+                        unsafe { GLOBAL_ENV.quit() }
                     }
                 }
 
@@ -525,7 +533,7 @@ impl Context for Game {
                     self.draw_player(box_x, box_y),
                     self.draw_ui(box_x, box_y),
                     self.mouse_traces.render(),
-                    self.curr_popup.render()
+                    self.curr_popup.render(),
                 ].concat();
 
                 graphics = self.scale_screen(graphics);
