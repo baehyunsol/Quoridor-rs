@@ -4,9 +4,8 @@ use super::{
     align::{Alignment, Movable}, scale::{Scale, Scalable},
     rect::Rect, textbox::TextBox, outline::{Outline, set_radius},
     draw::{draw_outline, draw_background},
-    TOP, BOTTOM, LEFT, RIGHT
+    TOP, BOTTOM, LEFT, RIGHT,
 };
-use std::default::Default;
 
 mod setters;
 
@@ -25,11 +24,10 @@ pub struct Base {
     background: Option<Color>,
     text_background: Option<Color>,
     rendered: Vec<Graphic>,
-    is_rendered: bool
+    is_rendered: bool,
 }
 
 impl Base {
-
     pub fn new(x: f32, y: f32, w: f32, h: f32, text: &str) -> Self {
         Base {
             x, y, w, h, text: text.to_string(),
@@ -42,7 +40,6 @@ impl Base {
     }
 
     pub fn render(&mut self) -> Vec<Graphic> {
-
         if self.is_rendered {
             return self.rendered.clone();
         }
@@ -83,14 +80,12 @@ impl Base {
 
         self.rendered.clone()
     }
-
     pub fn fit_to_rect(&mut self, rect: &Rect) {
         self.x = rect.x;
         self.y = rect.y;
         self.w = rect.w;
         self.h = rect.h;
     }
-
 }
 
 impl Default for Base {
@@ -108,13 +103,12 @@ impl Default for Base {
             background: None,
             text_background: None,
             rendered: vec![],
-            is_rendered: false
+            is_rendered: false,
         }
     }
 }
 
 impl Movable for Base {
-
     #[inline]
     fn x(&self) -> f32 {
         self.x
@@ -149,18 +143,17 @@ impl Movable for Base {
 }
 
 impl Scalable for Base {
-
     fn w_scale(&self) -> Scale {
         match self.w_scale {
             None => Scale::new_abs(self.w),
-            Some(s) => s
+            Some(s) => s,
         }
     }
 
     fn h_scale(&self) -> Scale {
         match self.h_scale {
             None => Scale::new_abs(self.h),
-            Some(s) => s
+            Some(s) => s,
         }
     }
 
@@ -173,5 +166,4 @@ impl Scalable for Base {
         self.h = h;
         self.is_rendered = false;
     }
-
 }

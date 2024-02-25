@@ -8,7 +8,6 @@ pub struct Color {
 
 
 impl Color {
-
     pub fn new(r: u8, g: u8, b: u8, a: u8) -> Color {
         Color {r, g, b, a}
     }
@@ -56,5 +55,4 @@ impl Color {
     pub fn player2_trace() -> Self {
         Color::new(192, 128, 255, 128)
     }
-
 }

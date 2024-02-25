@@ -33,20 +33,20 @@ pub struct Game {
     buttons: Vec<Button>,
     screen_scale: Option<ScreenScale>,
     mouse_traces: MouseTraces,
-    frame_count: usize
+    frame_count: usize,
 }
 
 struct ScreenScale {
     offset_x: f32,
     offset_y: f32,
-    zoom: f32
+    zoom: f32,
 }
 
 #[derive(Copy, Clone, PartialEq)]
 enum GameState {
     ScreenTooSmall,
     Playing,
-    GameOver
+    GameOver,
 }
 
 impl Game {
@@ -75,7 +75,7 @@ impl Game {
             ],
             screen_scale: None,
             mouse_traces: MouseTraces::new(),
-            frame_count: 0
+            frame_count: 0,
         };
 
         game.calc_screen_scale();
@@ -85,7 +85,6 @@ impl Game {
     }
 
     fn locate_buttons(&mut self) {
-
         let (screen_w, _) = self.get_screen_size();
         let x = screen_w - 150.0;
         let mut curr_y = 30.0;
@@ -94,7 +93,6 @@ impl Game {
             button.move_to(x, curr_y);
             curr_y += 60.0;
         }
-
     }
 
     fn undo(&mut self) {
@@ -150,7 +148,6 @@ impl Game {
             else {
                 result.push((new_x, new_y));
             }
-
         }
 
         result
@@ -169,9 +166,7 @@ impl Game {
     }
 
     pub fn is_movable_at(&self, pos: (i32, i32), dir: (i32, i32)) -> bool {
-
         let result = if dir.0 == 0 {
-
             if dir.1 < 0 {
                 !self.horizontal_walls[pos.1 as usize][pos.0 as usize]
             }
@@ -185,11 +180,9 @@ impl Game {
                 unsafe { GLOBAL_ENV.raise_error(&format!("Something went wrong: file `game.rs`, func `is_movable_at`, dir: {:?}", dir)); }
                 true
             }
-
         }
 
         else if dir.1 == 0 {
-
             if dir.0 < 0 {
                 !self.vertical_walls[pos.0 as usize][pos.1 as usize]
             }
@@ -203,7 +196,6 @@ impl Game {
                 unsafe { GLOBAL_ENV.raise_error(&format!("Something went wrong: file `game.rs`, func `is_movable_at`, dir: {:?}", dir)); }
                 true
             }
-
         }
 
         else {
@@ -219,7 +211,6 @@ impl Game {
         else {
             result
         }
-
     }
 
     fn next_turn(&mut self) {
@@ -235,16 +226,13 @@ impl Game {
     }
 
     fn scale_mouse(&self, mouse_pos: (f32, f32)) -> (f32, f32) {
-
         match &self.screen_scale {
             None => mouse_pos,
-            Some(s) => ((mouse_pos.0 - s.offset_x) / s.zoom, (mouse_pos.1 - s.offset_y) / s.zoom)
+            Some(s) => ((mouse_pos.0 - s.offset_x) / s.zoom, (mouse_pos.1 - s.offset_y) / s.zoom),
         }
-
     }
 
     fn scale_screen(&self, graphics: Vec<Graphic>) -> Vec<Graphic> {
-
         match &self.screen_scale {
             None => graphics,
             Some(s) => {
@@ -252,9 +240,8 @@ impl Game {
                     |graphic|
                     graphic.scale(0.0, 0.0, s.zoom, s.zoom).move_rel(s.offset_x, s.offset_y)
                 ).collect()
-            }
+            },
         }
-
     }
 
     fn calc_screen_scale(&mut self) {
@@ -281,11 +268,9 @@ impl Game {
                 offset_x, offset_y, zoom
             });
         }
-
     }
 
     fn get_screen_size(&self) -> (f32, f32) {
-
         if self.screen_scale.is_none() {
             unsafe { GLOBAL_ENV.screen_size }
         }
@@ -293,9 +278,7 @@ impl Game {
         else {
             (1536.0, 800.0)
         }
-
     }
-
 }
 
 impl Context for Game {
@@ -314,7 +297,6 @@ impl Context for Game {
             if self.state == GameState::ScreenTooSmall && real_screen_w >= 580.0 && real_screen_h >= 380.0 {
                 self.state = self.last_state;
             }
-
         }
 
         if real_screen_w < 580.0 || real_screen_h < 380.0 {
@@ -333,15 +315,13 @@ impl Context for Game {
                 graphics = textbox.render();
 
                 (self, graphics, vec![])
-            }
+            },
             GameState::GameOver => {
-
                 for button in self.buttons.iter_mut() {
                     button.check_mouse(mouse_pos);
                 }
 
                 if inputs.mouse_pressed[0] {
-
                     if self.buttons[0].check_mouse(mouse_pos) {
                         self.curr_popup = Popup::new("Restart");
                         self.restart();
@@ -354,7 +334,6 @@ impl Context for Game {
                     else if self.buttons[2].check_mouse(mouse_pos) {
                         unsafe {GLOBAL_ENV.quit()}
                     }
-
                 }
 
                 let (box_x, box_y) = ((screen_w - BOARD_SIZE) / 2.0, (screen_h - BOARD_SIZE) / 1.2);
@@ -377,13 +356,13 @@ impl Context for Game {
                     self.player1.show_trace(box_x, box_y),
                     self.player2.show_trace(box_x, box_y),
                     win_message,
-                    self.curr_popup.render()
+                    self.curr_popup.render(),
                 ].concat();
 
                 graphics = self.scale_screen(graphics);
 
                 (self, graphics, vec![])
-            }
+            },
             GameState::Playing => {
                 let clock_check = time::Instant::now().duration_since(self.last_clock_tick.clone()).as_millis();
 
@@ -401,19 +380,19 @@ impl Context for Game {
                 let (mouse_x, mouse_y) = mouse_pos;
                 let mouse_index = get_cursor_index(mouse_x, mouse_y, box_x, box_y);
 
-                let mut board_graphics = self.draw_board(box_x, box_y);
+                let board_graphics = self.draw_board(box_x, box_y);
 
                 match mouse_index {
                     Index::Box(x, y) => {
                         self.mouse_traces.add(box_x + (x * 72) as f32 + 21.0, box_y + (y * 72) as f32 + 21.0, 48.0, 48.0);
-                    }
+                    },
                     Index::Vertical(x, y) if x < 9 && y < 8 && x > 0 => {
                         self.mouse_traces.add(box_x + (x * 72) as f32 + 3.0, box_y + (y * 72) as f32 + 18.0, 12.0, 126.0);
-                    }
+                    },
                     Index::Horizontal(x, y) if y < 9 && x < 8 && y > 0 => {
                         self.mouse_traces.add(box_x + (x * 72) as f32 + 18.0, box_y + (y * 72) as f32 + 3.0, 126.0, 12.0);
-                    }
-                    _ => {}
+                    },
+                    _ => {},
                 }
 
                 if inputs.mouse_pressed[0] {
@@ -425,7 +404,6 @@ impl Context for Game {
                             let mut is_invalid_move = true;
 
                             for next_move in self.get_valid_moves() {
-
                                 if (x, y) == next_move {
                                     self.last_turn_data = GameSaveData::from_game(&self);
 
@@ -441,16 +419,13 @@ impl Context for Game {
                                     is_invalid_move = false;
                                     break;
                                 }
-
                             }
 
                             if is_invalid_move {
                                 self.curr_popup = Popup::new("Invalid Move!");
                             }
-
-                        }
+                        },
                         Index::Vertical(x, y) => {
-
                             if (self.player1_turn && self.player1.walls == 0) || (!self.player1_turn && self.player2.walls == 0) {
                                 self.curr_popup = Popup::new("No walls to place!");
                             }
@@ -477,10 +452,8 @@ impl Context for Game {
                             else {
                                 self.curr_popup = Popup::new("Cannot place a wall there!");
                             }
-
-                        }
+                        },
                         Index::Horizontal(x, y) => {
-
                             if (self.player1_turn && self.player1.walls == 0) || (!self.player1_turn && self.player2.walls == 0) {
                                 self.curr_popup = Popup::new("No walls to place!");
                             }
@@ -507,9 +480,8 @@ impl Context for Game {
                             else {
                                 self.curr_popup = Popup::new("Cannot place a wall there!");
                             }
-
-                        }
-                        Index::None => {}
+                        },
+                        Index::None => {},
                     }
 
                     if new_wall_placed {
@@ -519,7 +491,6 @@ impl Context for Game {
                             self.curr_popup = Popup::new("You may not trap a player!");
                             self.undo();
                         }
-
                     }
 
                     if self.buttons[0].check_mouse(mouse_pos) {
@@ -535,7 +506,6 @@ impl Context for Game {
                     else if self.buttons[2].check_mouse(mouse_pos) {
                         unsafe {GLOBAL_ENV.quit()}
                     }
-
                 }
 
                 if self.did_player1_win() {
@@ -563,12 +533,10 @@ impl Context for Game {
                 (self, graphics, vec![])
             }
         }
-
     }
 }
 
 fn get_cursor_index(mouse_x: f32, mouse_y: f32, box_x: f32, box_y: f32) -> Index {
-
     if mouse_x <= box_x || mouse_x >= box_x + BOARD_SIZE || mouse_y <= box_y || mouse_y >= box_y + BOARD_SIZE {
         Index::None
     }
@@ -588,16 +556,14 @@ fn get_cursor_index(mouse_x: f32, mouse_y: f32, box_x: f32, box_y: f32) -> Index
         else {
             Index::Vertical(mouse_index_x, mouse_index_y)
         }
-
     }
-
 }
 
 enum Index {
     None,
     Box(usize, usize),
     Horizontal(usize, usize),
-    Vertical(usize, usize)
+    Vertical(usize, usize),
 }
 
 const BOARD_SIZE: f32 = 666.0;

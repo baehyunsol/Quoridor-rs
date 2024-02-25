@@ -1,5 +1,4 @@
 use macroquad::prelude::*;
-use macroquad::input::{is_key_down, is_key_pressed, KeyCode};
 
 pub struct Inputs {
     pub key_down: Vec<bool>,

@@ -12,17 +12,16 @@ pub enum SoundAction {
     Stop(usize),
     MuteAll,
     UnmuteAll,
-    StopAll
+    StopAll,
 }
 
 pub struct SoundManager {
     is_looping: Vec<bool>,
     muted: bool,
-    pub sounds: Vec<Sound>
+    pub sounds: Vec<Sound>,
 }
 
 impl SoundManager {
-
     pub fn new(sounds: Vec<Sound>) -> SoundManager {
         let is_looping = vec![false;sounds.len()];
 
@@ -32,18 +31,15 @@ impl SoundManager {
     }
 
     pub fn stop_all(&mut self) {
-
         for snd in self.sounds.iter() {
-            stop_sound(*snd);
+            stop_sound(snd);
         }
 
         self.is_looping = vec![false;self.is_looping.len()];
     }
 
     pub fn frame(&mut self, actions: Vec<SoundAction>) {
-
         for action in actions.iter() {
-
             if self.muted {
                 match action {
                     SoundAction::UnmuteAll => {
@@ -57,18 +53,16 @@ impl SoundManager {
 
             match action {
                 SoundAction::PlayOnce(sound) => {
-
                     #[cfg(feature = "profile")]
                     if *sound >= self.sounds.len() {
                         unsafe { GLOBAL_ENV.raise_error("Uninitialized sound used!"); }
                         break;
                     }
 
-                    play_sound_once(self.sounds[*sound]);
+                    play_sound_once(&self.sounds[*sound]);
                     self.is_looping[*sound] = false;
-                }
+                },
                 SoundAction::PlayLoop(sound) => {
-
                     #[cfg(feature = "profile")]
                     if *sound >= self.sounds.len() {
                         unsafe { GLOBAL_ENV.raise_error("Uninitialized sound used!"); }
@@ -76,13 +70,11 @@ impl SoundManager {
                     }
 
                     if !self.is_looping[*sound] {
-                        play_sound(self.sounds[*sound], PlaySoundParams {looped: true, ..PlaySoundParams::default()});
+                        play_sound(&self.sounds[*sound], PlaySoundParams { looped: true, volume: 1.0 });
                         self.is_looping[*sound] = true;
                     }
-
-                }
+                },
                 SoundAction::Stop(sound) => {
-
                     #[cfg(feature = "profile")]
                     if *sound >= self.sounds.len() {
                         unsafe { GLOBAL_ENV.raise_error("Uninitialized sound used!"); }
@@ -91,28 +83,24 @@ impl SoundManager {
 
 
                     if self.is_looping[*sound] {
-                        stop_sound(self.sounds[*sound]);
+                        stop_sound(&self.sounds[*sound]);
                         self.is_looping[*sound] = false;
                     }
-
-                }
+                },
                 SoundAction::StopAll => {
-
                     for snd in self.sounds.iter() {
-                        stop_sound(*snd);
+                        stop_sound(snd);
                     }
 
                     self.is_looping = vec![false;self.is_looping.len()];
-                }
+                },
                 SoundAction::MuteAll => {
                     self.muted = true;
-                }
+                },
                 SoundAction::UnmuteAll => {
                     self.muted = false;
-                }
+                },
             }
         }
-
     }
-
 }

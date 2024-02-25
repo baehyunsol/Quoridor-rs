@@ -3,7 +3,6 @@
 use super::color::Color as GColor;
 use super::global::GLOBAL_ENV;
 use macroquad::prelude::*;
-use macroquad::{texture::Texture2D, text::Font};
 
 #[derive(Clone)]
 pub enum Graphic {
@@ -154,7 +153,7 @@ pub fn render(graphics: Vec<Graphic>, textures: &Vec<Texture2D>, fonts: &Vec<Fon
                     &string, x, y, TextParams {
                         font_size: size,
                         color: Color::from_rgba(color.r, color.g, color.b, color.a),
-                        font: fonts[font],
+                        font: Some(&fonts[font]),
                         ..Default::default()
                     }
                 );
@@ -168,11 +167,10 @@ pub fn render(graphics: Vec<Graphic>, textures: &Vec<Texture2D>, fonts: &Vec<Fon
                 }
 
                 draw_texture(
-                    textures[image_index], x, y, Color::from_rgba(color.r, color.g, color.b, color.a),
+                    &textures[image_index], x, y, Color::from_rgba(color.r, color.g, color.b, color.a),
                 );
-            }
+            },
             Graphic::RoundRect {x, y, w, h, radius, thickness, color} => {
-
                 if thickness > 0.0 {
                     draw_line(x + 0.293 * radius, y + 0.293 * radius, x + 0.618 * radius, y + 0.077 * radius, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
                     draw_line(x + 0.618 * radius, y + 0.077 * radius, x + radius, y, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
@@ -217,12 +215,9 @@ pub fn render(graphics: Vec<Graphic>, textures: &Vec<Texture2D>, fonts: &Vec<Fon
                     draw_triangle(Vec2::new(x + w - radius, y + h - radius), Vec2::new(x + w - 0.293 * radius, y + h - 0.293 * radius), Vec2::new(x + w - 0.618 * radius, y + h - 0.077 * radius), Color::from_rgba(color.r, color.g, color.b, color.a));
                     draw_triangle(Vec2::new(x + w - radius, y + h - radius), Vec2::new(x + w - 0.618 * radius, y + h - 0.077 * radius), Vec2::new(x + w - radius, y + h), Color::from_rgba(color.r, color.g, color.b, color.a));
                 }
-
-            }
+            },
             Graphic::Polygon {center_x, center_y, points, thickness, color} => {
-
                 if thickness > 0.0 {
-
                     for i in 0..points.len() - 1 {
                         let (x1, y1) = points[i];
                         let (x2, y2) = points[i + 1];
@@ -235,7 +230,6 @@ pub fn render(graphics: Vec<Graphic>, textures: &Vec<Texture2D>, fonts: &Vec<Fon
                 }
 
                 else {
-
                     for i in 0..points.len() - 1 {
                         let (x1, y1) = points[i];
                         let (x2, y2) = points[i + 1];
@@ -246,9 +240,7 @@ pub fn render(graphics: Vec<Graphic>, textures: &Vec<Texture2D>, fonts: &Vec<Fon
                     let (x2, y2) = points[points.len() - 1];
                     draw_triangle(Vec2::new(center_x, center_y), Vec2::new(x1, y1), Vec2::new(x2, y2), Color::from_rgba(color.r, color.g, color.b, color.a));
                 }
-
-            }
+            },
         }
     }
-
 }

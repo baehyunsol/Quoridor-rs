@@ -99,26 +99,23 @@ async fn main() {
 
         // handle GLOBAL_ENV.messages
         unsafe {
-
             while GLOBAL_ENV.messages.len() > 0 {
-
                 match GLOBAL_ENV.messages.pop().unwrap() {
                     EnvMessage::Quit => {
                         sound_manager.stop_all();
                         break 'game_loop;
-                    }
+                    },
                     EnvMessage::Error(message) => {
                         curr_game = Box::new(engine::error::ErrorHandler::new(message));
                         continue 'game_loop;
-                    }
+                    },
                     EnvMessage::ShowCursor(show) => {
                         show_mouse(show);
-                    }
+                    },
                     EnvMessage::GrabCursor(grab) => {
                         set_cursor_grab(grab);
-                    }
+                    },
                     EnvMessage::LoadImage(path, index) => {
-
                         if index >= textures.len() {
                             GLOBAL_ENV.messages.push(EnvMessage::Error(
                                 format!("Index error when dynamically loading an image: `index` is {}, but `textures.len()` is {}", index, textures.len())
@@ -126,8 +123,6 @@ async fn main() {
                         }
 
                         else {
-                            textures[index].delete();
-
                             match engine::loader::load_image_from_file(&path) {
                                 Err(message) => {
                                     GLOBAL_ENV.messages.push(EnvMessage::Error(message));
@@ -136,12 +131,9 @@ async fn main() {
                                     textures[index] = image;
                                 }
                             }
-
                         }
-
-                    }
+                    },
                     EnvMessage::LoadSound(path, index) => {
-
                         if index >= sound_manager.sounds.len() {
                             GLOBAL_ENV.messages.push(EnvMessage::Error(
                                 format!("Index error when dynamically loading a sound: `index` is {}, but `sounds.len()` is {}", index, sound_manager.sounds.len())
@@ -158,12 +150,9 @@ async fn main() {
                                 }
                             }
                         }
-
-                    }
+                    },
                 }
-
             }
-
         }
 
         // play sounds
@@ -187,5 +176,4 @@ async fn main() {
 
         next_frame().await;
     }
-
 }
