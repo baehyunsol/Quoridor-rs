@@ -1,6 +1,7 @@
 mod game;
 mod engine;
 
+mod ai;
 mod dfs;
 mod player;
 mod popup;

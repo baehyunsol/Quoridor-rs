@@ -29,7 +29,7 @@ pub enum Graphic {
     },
     Polygon {
         center_x: f32, center_y: f32, points: Vec<(f32, f32)>, thickness: f32, color: GColor
-    }
+    },
 }
 
 
@@ -84,16 +84,12 @@ impl Graphic {
             Graphic::Polygon {center_x: x, center_y: y, points, thickness, color}
         }
     }
-
 }
 
 pub fn render(graphics: Vec<Graphic>, textures: &Vec<Texture2D>, fonts: &Vec<Font>) {
-
     for graphic in graphics.into_iter() {
-
         match graphic {
             Graphic::Rect {x, y, w, h, thickness, color} => {
-
                 if thickness > 0.0 {
                     draw_rectangle_lines(
                         x, y, w, h, thickness, Color::from_rgba(color.r, color.g, color.b, color.a)
@@ -105,10 +101,9 @@ pub fn render(graphics: Vec<Graphic>, textures: &Vec<Texture2D>, fonts: &Vec<Fon
                         x, y, w, h, Color::from_rgba(color.r, color.g, color.b, color.a)
                     );
                 }
-
-            }
+            },
             Graphic::Circle {x, y, r, thickness, color} => {
-                let sides = if r < 60.0 { 15 } else if r < 180.0 { 18 } else { 24 };
+                let sides = if r < 60.0 { 18 } else if r < 180.0 { 24 } else { 30 };
 
                 if thickness > 0.0 {
                     draw_poly_lines(
@@ -121,13 +116,11 @@ pub fn render(graphics: Vec<Graphic>, textures: &Vec<Texture2D>, fonts: &Vec<Fon
                         x, y, sides, r, 0.0, Color::from_rgba(color.r, color.g, color.b, color.a)
                     );
                 }
-            
-            }
+            },
             Graphic::Line {x1, y1, x2, y2, thickness, color} => {
                 draw_line(x1, y1, x2, y2, thickness, Color::from_rgba(color.r, color.g, color.b, color.a));
-            }
+            },
             Graphic::Triangle {x1, y1, x2, y2, x3, y3, thickness, color} => {
-
                 if thickness > 0.0 {
                     draw_triangle_lines(
                         Vec2::new(x1, y1), Vec2::new(x2, y2), Vec2::new(x3, y3), thickness, Color::from_rgba(color.r, color.g, color.b, color.a)
@@ -139,10 +132,8 @@ pub fn render(graphics: Vec<Graphic>, textures: &Vec<Texture2D>, fonts: &Vec<Fon
                         Vec2::new(x1, y1), Vec2::new(x2, y2), Vec2::new(x3, y3), Color::from_rgba(color.r, color.g, color.b, color.a)
                     );
                 }
-
-            }
+            },
             Graphic::Text {x, y, size, string, font, color} => {
-
                 #[cfg(feature = "profile")]
                 if font >= fonts.len() {
                     unsafe { GLOBAL_ENV.raise_error("Uninitialized font used!"); }
@@ -157,9 +148,8 @@ pub fn render(graphics: Vec<Graphic>, textures: &Vec<Texture2D>, fonts: &Vec<Fon
                         ..Default::default()
                     }
                 );
-            }
+            },
             Graphic::Image {x, y, image_index, color} => {
-
                 #[cfg(feature = "profile")]
                 if image_index >= textures.len() {
                     unsafe { GLOBAL_ENV.raise_error("Uninitialized image used!"); }

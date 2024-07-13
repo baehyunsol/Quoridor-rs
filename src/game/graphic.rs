@@ -84,7 +84,7 @@ impl Game {
         }
 
         let p1_info = TextBox::new(
-            "p1",
+            &format!("p1 ({})", if self.played_by_cpu.0 { "cpu" } else { "human" }),
             box_x - 90.0,
             box_y - 80.0,
             210.0,
@@ -93,7 +93,7 @@ impl Game {
         ).set_color(Color::ui()).align_center().render();
 
         let p2_info = TextBox::new(
-            if self.is_cpu_game { "computer" } else { "p2" },
+            &format!("p2 ({})", if self.played_by_cpu.1 { "cpu" } else { "human" }),
             box_x + BOARD_SIZE - 120.0,
             box_y - 80.0,
             210.0,

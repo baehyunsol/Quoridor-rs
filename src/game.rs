@@ -7,7 +7,7 @@ use crate::engine::graphic::Graphic;
 use crate::engine::global::GLOBAL_ENV;
 use crate::engine::widget::{
     textbox::TextBox,
-    button::Button
+    button::Button,
 };
 use crate::engine::sound::SoundAction;
 use crate::engine::color::Color;
@@ -28,7 +28,7 @@ pub struct Game {
     pub cross_walls: Vec<Vec<bool>>,
     curr_popup: Popup,
     pub player1_turn: bool,
-    is_cpu_game: bool,
+    played_by_cpu: (bool, bool),  // (player1, player2)
     last_turn_data: GameSaveData,
     last_state: GameState,  // state to transit from `ScreenTooSmall`
     buttons: Vec<Button>,
@@ -68,7 +68,7 @@ impl Game {
             clock: 0.0,
             curr_popup: Popup::dummy(),
             player1_turn: true,
-            is_cpu_game: false,
+            played_by_cpu: (false, false),
             last_turn_data: GameSaveData::dummy(),
             last_state: GameState::Playing,
             buttons: vec![
@@ -111,7 +111,7 @@ impl Game {
         self.last_clock_tick = time::Instant::now();
     }
 
-    fn restart(&mut self) {
+    fn restart(&mut self, played_by_cpu: (bool, bool)) {
         self.player1 = Player::new(true);
         self.player2 = Player::new(false);
         self.clock = 0.0;
@@ -119,6 +119,7 @@ impl Game {
         self.horizontal_walls = vec![vec![false; 9]; 10];
         self.cross_walls = vec![vec![false; 10]; 10];
         self.player1_turn = true;
+        self.played_by_cpu = played_by_cpu;
         self.last_turn_data = GameSaveData::dummy();
 
         self.state = GameState::Playing;
@@ -128,7 +129,6 @@ impl Game {
     }
 
     fn get_valid_moves(&self) -> Vec<(i32, i32)> {
-
         let mut result = Vec::with_capacity(4);
 
         let ((x, y), (another_x, another_y)) = if self.player1_turn {
@@ -215,6 +215,11 @@ impl Game {
         else {
             result
         }
+    }
+
+    fn is_human_turn(&self) -> bool {
+        self.player1_turn && !self.played_by_cpu.0
+        || !self.player1_turn && !self.played_by_cpu.1
     }
 
     fn next_turn(&mut self) {
@@ -327,16 +332,22 @@ impl Context for Game {
 
                 if inputs.mouse_pressed[0] {
                     if self.buttons[0].check_mouse(mouse_pos) {
-                        self.curr_popup = Popup::new("Restart");
-                        self.restart();
+                        self.curr_popup = Popup::new("CPU game is not implemented yet!");
+                        self.restart((false, true));
                     }
 
                     else if self.buttons[1].check_mouse(mouse_pos) {
-                        self.curr_popup = Popup::new("You cannot undo it. The game is over.");
+                        self.curr_popup = Popup::new("Restart");
+                        self.restart((false, false));
                     }
 
                     else if self.buttons[2].check_mouse(mouse_pos) {
-                        unsafe {GLOBAL_ENV.quit()}
+                        self.curr_popup = Popup::new("Undo");
+                        self.undo();
+                    }
+
+                    else if self.buttons[3].check_mouse(mouse_pos) {
+                        unsafe { GLOBAL_ENV.quit() }
                     }
                 }
 
@@ -350,7 +361,7 @@ impl Context for Game {
                 );
                 let win_message = TextBox::new(
                     &format!("Player {} made it!", if self.did_player1_win() { 1 } else { 2 }),
-                    0.0, 0.0, screen_w, screen_h, 48.0
+                    0.0, 0.0, screen_w, screen_h, 48.0,
                 ).set_color(win_message_color)
                 .align_center().render();
 
@@ -399,111 +410,122 @@ impl Context for Game {
                     _ => {},
                 }
 
-                if inputs.mouse_pressed[0] {
-                    let mut new_wall_placed = false;
+                if self.is_human_turn() {
+                    if inputs.mouse_pressed[0] {
+                        let mut new_wall_placed = false;
 
-                    match mouse_index {
-                        Index::Box(x, y) => {
-                            let (x, y) = (x as i32, y as i32);
-                            let mut is_invalid_move = true;
+                        match mouse_index {
+                            Index::Box(x, y) => {
+                                let (x, y) = (x as i32, y as i32);
+                                let mut is_invalid_move = true;
 
-                            for next_move in self.get_valid_moves() {
-                                if (x, y) == next_move {
+                                for next_move in self.get_valid_moves() {
+                                    if (x, y) == next_move {
+                                        self.last_turn_data = GameSaveData::from_game(&self);
+
+                                        if self.player1_turn {
+                                            self.player1.move_to(x, y);
+                                        }
+
+                                        else {
+                                            self.player2.move_to(x, y);
+                                        }
+
+                                        self.next_turn();
+                                        is_invalid_move = false;
+                                        break;
+                                    }
+                                }
+
+                                if is_invalid_move {
+                                    self.curr_popup = Popup::new("Invalid Move!");
+                                }
+                            },
+                            Index::Vertical(x, y) => {
+                                if (self.player1_turn && self.player1.walls == 0) || (!self.player1_turn && self.player2.walls == 0) {
+                                    self.curr_popup = Popup::new("No walls to place!");
+                                }
+
+                                else if self.is_vertical_wall_ok_at(x, y) {
                                     self.last_turn_data = GameSaveData::from_game(&self);
 
+                                    self.vertical_walls[x][y] = true;
+                                    self.vertical_walls[x][y + 1] = true;
+                                    self.cross_walls[x][y + 1] = true;
+
                                     if self.player1_turn {
-                                        self.player1.move_to(x, y);
+                                        self.player1.walls -= 1;
                                     }
 
                                     else {
-                                        self.player2.move_to(x, y);
+                                        self.player2.walls -= 1;
                                     }
 
+                                    new_wall_placed = true;
                                     self.next_turn();
-                                    is_invalid_move = false;
-                                    break;
-                                }
-                            }
-
-                            if is_invalid_move {
-                                self.curr_popup = Popup::new("Invalid Move!");
-                            }
-                        },
-                        Index::Vertical(x, y) => {
-                            if (self.player1_turn && self.player1.walls == 0) || (!self.player1_turn && self.player2.walls == 0) {
-                                self.curr_popup = Popup::new("No walls to place!");
-                            }
-
-                            else if self.is_vertical_wall_ok_at(x, y) {
-                                self.last_turn_data = GameSaveData::from_game(&self);
-
-                                self.vertical_walls[x][y] = true;
-                                self.vertical_walls[x][y + 1] = true;
-                                self.cross_walls[x][y + 1] = true;
-
-                                if self.player1_turn {
-                                    self.player1.walls -= 1;
                                 }
 
                                 else {
-                                    self.player2.walls -= 1;
+                                    self.curr_popup = Popup::new("Cannot place a wall there!");
+                                }
+                            },
+                            Index::Horizontal(x, y) => {
+                                if (self.player1_turn && self.player1.walls == 0) || (!self.player1_turn && self.player2.walls == 0) {
+                                    self.curr_popup = Popup::new("No walls to place!");
                                 }
 
-                                new_wall_placed = true;
-                                self.next_turn();
-                            }
+                                else if self.is_horizontal_wall_ok_at(x, y) {
+                                    self.last_turn_data = GameSaveData::from_game(&self);
 
-                            else {
-                                self.curr_popup = Popup::new("Cannot place a wall there!");
-                            }
-                        },
-                        Index::Horizontal(x, y) => {
-                            if (self.player1_turn && self.player1.walls == 0) || (!self.player1_turn && self.player2.walls == 0) {
-                                self.curr_popup = Popup::new("No walls to place!");
-                            }
+                                    self.horizontal_walls[y][x] = true;
+                                    self.horizontal_walls[y][x + 1] = true;
+                                    self.cross_walls[x + 1][y] = true;
 
-                            else if self.is_horizontal_wall_ok_at(x, y) {
-                                self.last_turn_data = GameSaveData::from_game(&self);
+                                    if self.player1_turn {
+                                        self.player1.walls -= 1;
+                                    }
 
-                                self.horizontal_walls[y][x] = true;
-                                self.horizontal_walls[y][x + 1] = true;
-                                self.cross_walls[x + 1][y] = true;
+                                    else {
+                                        self.player2.walls -= 1;
+                                    }
 
-                                if self.player1_turn {
-                                    self.player1.walls -= 1;
+                                    new_wall_placed = true;
+                                    self.next_turn();
                                 }
 
                                 else {
-                                    self.player2.walls -= 1;
+                                    self.curr_popup = Popup::new("Cannot place a wall there!");
                                 }
+                            },
+                            Index::None => {},
+                        }
 
-                                new_wall_placed = true;
-                                self.next_turn();
+                        if new_wall_placed {
+                            let visited = vec![vec![false; 10]; 10];
+
+                            if !self.dfs(self.player1.position, 8, 1, &mut visited.clone()) || !self.dfs(self.player2.position, 0, -1, &mut visited.clone()) {
+                                self.curr_popup = Popup::new("You may not trap a player!");
+                                self.undo();
                             }
-
-                            else {
-                                self.curr_popup = Popup::new("Cannot place a wall there!");
-                            }
-                        },
-                        Index::None => {},
-                    }
-
-                    if new_wall_placed {
-                        let visited = vec![vec![false; 10]; 10];
-
-                        if !self.dfs(self.player1.position, 8, 1, &mut visited.clone()) || !self.dfs(self.player2.position, 0, -1, &mut visited.clone()) {
-                            self.curr_popup = Popup::new("You may not trap a player!");
-                            self.undo();
                         }
                     }
+                }
 
+                else {
+                    // TODO: impl ai mode
+                    self.curr_popup = Popup::new("CPU game is not implemented yet!");
+                    self.restart((false, false));
+                }
+
+                if inputs.mouse_pressed[0] {
                     if self.buttons[0].check_mouse(mouse_pos) {
                         self.curr_popup = Popup::new("CPU game is not implemented yet!");
+                        self.restart((false, true));
                     }
 
                     else if self.buttons[1].check_mouse(mouse_pos) {
                         self.curr_popup = Popup::new("Restart");
-                        self.restart();
+                        self.restart((false, false));
                     }
 
                     else if self.buttons[2].check_mouse(mouse_pos) {
